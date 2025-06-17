@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>EcoLogin | Waste Management System</title>
+    <style>
+      :root {
+        --primary-green: #2e8b57;
+        --secondary-green: #3cb371;
+        --light-green: #98fb98;
+        --earth-brown: #8b4513;
+        --recycle-blue: #4682b4;
+        --paper-beige: #f5f5dc;
+        --alert-red: #ff6b6b;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f0f8ff;
+        background-image: url("https://img.freepik.com/free-vector/recycling-concept-background_23-2148591572.jpg?w=1380&t=st=1716500000~exp=1716500600~hmac=...");
+        background-size: cover;
+        background-blend-mode: overlay;
+        background-color: rgba(240, 248, 255, 0.9);
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .login-container {
+        background-color: white;
+        width: 90%;
+        max-width: 500px;
+        padding: 2.5rem;
+        border-radius: 15px;
+        box-shadow: 0 8px 16px rgba(46, 139, 87, 0.2);
+        border: 3px solid var(--primary-green);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .login-container::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 10px;
+        background: linear-gradient(
+          90deg,
+          var(--primary-green) 0%,
+          var(--secondary-green) 25%,
+          var(--recycle-blue) 50%,
+          var(--earth-brown) 75%,
+          var(--light-green) 100%
+        );
+      }
+
+      h1 {
+        color: var(--primary-green);
+        text-align: center;
+        margin-bottom: 1.5rem;
+        font-size: 2.2rem;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        position: relative;
+      }
+
+      h1::after {
+        content: "♻️";
+        position: absolute;
+        right: 20%;
+        top: 50%;
+        transform: translateY(-50%);
+      }
+
+      h1::before {
+        content: "♻️";
+        position: absolute;
+        left: 20%;
+        top: 50%;
+        transform: translateY(-50%);
+      }
+
+      .login-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.2rem;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      label {
+        color: var(--earth-brown);
+        font-weight: 600;
+        font-size: 1.1rem;
+      }
+
+      input {
+        padding: 0.8rem;
+        border: 2px solid var(--light-green);
+        border-radius: 8px;
+        background-color: var(--paper-beige);
+        transition: all 0.3s ease;
+        font-size: 1rem;
+      }
+
+      input:focus {
+        border-color: var(--recycle-blue);
+        background-color: white;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(70, 130, 180, 0.2);
+      }
+
+      .login-btn {
+        padding: 0.8rem;
+        background-color: var(--primary-green);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        text-decoration: none;
+        letter-spacing: 1px;
+        margin-top: 1rem;
+        font-size: 1.1rem;
+      }
+
+      .login-btn:hover {
+        background-color: var(--secondary-green);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(46, 139, 87, 0.3);
+      }
+
+      .messages {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 1.5rem 0;
+      }
+
+      .messages li {
+        padding: 0.8rem;
+        margin-bottom: 0.5rem;
+        border-radius: 5px;
+        font-weight: 500;
+        text-align: center;
+      }
+
+      .error {
+        background-color: #ffebee;
+        color: var(--alert-red);
+        border-left: 4px solid var(--alert-red);
+      }
+
+      .success {
+        background-color: #e8f5e9;
+        color: var(--primary-green);
+        border-left: 4px solid var(--primary-green);
+      }
+
+      .signup-prompt {
+        text-align: center;
+        margin-top: 1.5rem;
+        color: var(--earth-brown);
+        font-size: 1rem;
+      }
+
+      .signup-link {
+        color: var(--recycle-blue);
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      .signup-link:hover {
+        text-decoration: underline;
+      }
+
+      /* Waste bin animation */
+      @keyframes shake {
+        0%,
+        100% {
+          transform: rotate(0deg);
+        }
+        25% {
+          transform: rotate(5deg);
+        }
+        75% {
+          transform: rotate(-5deg);
+        }
+      }
+
+      .login-btn:hover::after {
+        content: "🗑️";
+        margin-left: 8px;
+        display: inline-block;
+        animation: shake 0.5s infinite;
+      }
+
+      @media (max-width: 480px) {
+        .login-container {
+          padding: 1.5rem;
+        }
+
+        h1 {
+          font-size: 1.8rem;
+        }
+
+        h1::before,
+        h1::after {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="login-container">
+      <button class="login-btn"><a href="mess_login" style="text-decoration:none ; color:white"> Mess Login</a></button>
+
+      <h1>Eco Login</h1>
+      {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}
+        <li class="{{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+      <form method="post" class="login-form">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="roll_no">Roll Number:</label>
+          <input type="text" id="roll_no" name="roll_no" required />
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password:</label>
+          <input type="password" id="password" name="password" required />
+        </div>
+
+        <button type="submit" class="login-btn">Log In</button>
+      </form>
+      <p class="signup-prompt">
+        Don't have an account?
+        <a href="{% url 'signup' %}" class="signup-link">Sign up</a>
+      </p>
+    </div>
+  </body>
+</html>

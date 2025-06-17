@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Food Waste Sorting at IIT Guwahati</title>
+    <style>
+      /* General Styles */
+      body {
+        font-family: Arial, sans-serif;
+        color: #333;
+        background-color: #e0f2f1; /* Light teal background */
+        margin: 0;
+        padding: 0;
+        text-align: center;
+        position: relative; /* Ensures the return button is positioned relative to the page */
+      }
+
+      /* Return Button Styles */
+      .return-btn {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background-color: #00796b;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-size: 1em;
+        font-weight: bold;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        transition: background-color 0.3s ease, transform 0.3s ease;
+      }
+
+      .return-btn:hover {
+        background-color: #004d40;
+        transform: scale(1.05); /* Slight scaling effect on hover */
+      }
+
+      /* Header Styles */
+      h1 {
+        color: #00796b; /* Dark teal */
+        margin-top: 20px;
+        font-size: 2.5em;
+        text-transform: uppercase;
+      }
+
+      h2 {
+        color: #004d40;
+        margin: 10px 0;
+        font-size: 1.5em;
+      }
+
+      p {
+        font-size: 1.2em;
+        color: #666;
+        margin: 10px 20px;
+      }
+
+      /* Form Styles */
+      form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 30px;
+      }
+
+      form input[type="file"] {
+        border: 2px solid #00796b;
+        padding: 10px;
+        border-radius: 5px;
+        background-color: #ffffff;
+        margin-bottom: 20px;
+        width: 80%;
+        max-width: 400px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        transition: transform 0.3s ease;
+      }
+
+      form input[type="file"]:hover {
+        transform: scale(1.05);
+      }
+
+      form button {
+        background-color: #00796b;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1em;
+        transition: background-color 0.3s ease;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      form button:hover {
+        background-color: #004d40;
+      }
+
+      /* Progress Bar */
+      .progress-container {
+        width: 80%;
+        max-width: 500px;
+        background-color: #ddd;
+        border-radius: 20px;
+        margin: 70px auto;
+        overflow: hidden;
+      }
+
+      .progress-bar {
+        width: 0%;
+        height: 20px;
+        background: linear-gradient(90deg, #00796b, #004d40);
+        border-radius: 20px;
+        text-align: center;
+        color: white;
+        font-weight: bold;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        animation: glow 1.5s ease-in-out infinite alternate;
+      }
+
+      /* Progress Status */
+      #progressStatus {
+        font-size: 1.2em;
+        margin-top: 10px;
+        color: #00796b;
+      }
+
+      @keyframes glow {
+        from {
+          box-shadow: 0 0 10px #00796b, 0 0 20px #00796b, 0 0 30px #004d40;
+        }
+        to {
+          box-shadow: 0 0 20px #004d40, 0 0 30px #00796b, 0 0 40px #004d40;
+        }
+      }
+
+      /* Footer Styles */
+      footer {
+        margin-top: 50vh;
+        background-color: #004d40;
+        color: white;
+        padding: 20px;
+        font-size: 0.9em;
+        bottom: 0;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 600px) {
+        form {
+          width: 90%;
+        }
+
+        form input[type="file"],
+        form button {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <a href="/homepage" class="return-btn">Return Home</a>
+    <h1>Food Waste Sorting at IIT Guwahati</h1>
+    <h2>Upload Your Food Waste Image</h2>
+    <p>
+      Help us manage food waste at Kapili Hostel by uploading an image of your
+      food waste. Our tool will classify it as compostable (e.g., rice,
+      vegetables) or non-compostable (e.g., packaging) to support sustainable
+      disposal and composting initiatives.
+    </p>
+
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      <input type="file" name="food_waste_image" accept="image/*" required />
+      <button type="submit" onclick="showProgress()">
+        Classify Food Waste
+      </button>
+    </form>
+
+    <!-- Progress Bar -->
+    <div class="progress-container">
+      <div id="progressBar" class="progress-bar">0%</div>
+    </div>
+
+    <!-- Progress Status -->
+    <div id="progressStatus">Waiting for food waste classification...</div>
+
+    <script>
+      function showProgress() {
+        let progressBar = document.getElementById("progressBar");
+        let progressStatus = document.getElementById("progressStatus");
+        let width = 0;
+        let interval = setInterval(function () {
+          if (width >= 100) {
+            clearInterval(interval);
+            progressStatus.innerHTML = "Food waste classified successfully!";
+            progressStatus.style.color = "#004d40";
+          } else {
+            width++;
+            progressBar.style.width = width + "%";
+            progressBar.innerHTML = width + "%";
+
+            if (width < 50) {
+              progressStatus.innerHTML = "Uploading image...";
+            } else if (width < 100) {
+              progressStatus.innerHTML = "Analyzing food waste...";
+            }
+          }
+        }, 50); // Simulated progress
+      }
+    </script>
+
+    <footer>
+      <p>
+        © 2025 Food Waste Reduction Initiative, IIT Guwahati. All rights
+        reserved.
+      </p>
+      <p>Contact us: sustainability@iitg.ac.in</p>
+    </footer>
+  </body>
+</html>

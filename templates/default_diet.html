@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Default Diet Preferences</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    </head>
+    <style>
+        body {
+            background: linear-gradient(135deg, #e6f4ea, #f8fff6);
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #2c3e2c;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1, h4 {
+            color: #2f5d2f;
+            font-weight: 700;
+            text-align: center;
+        }
+          .day-card {
+        background-color: #f8fff9;
+        border-color: #bde5c3 !important;
+    }
+    
+    .day-header {
+        font-weight: 600;
+        border-bottom: 2px solid #e6f4ea;
+        padding-bottom: 8px;
+    }
+    
+    .meal-title {
+        color: #2f5d2f;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+    
+    .meal-items {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    
+    .meal-item {
+        padding: 6px 12px;
+        border-radius: 16px;
+        font-size: 0.9rem;
+        border: 1px solid #e6f4ea;
+    }
+    
+    @media (max-width: 768px) {
+        .day-card {
+            padding: 15px;
+        }
+    }
+        .table td ul {
+    margin: 0;
+    padding-left: 20px;
+}
+        .meal-icon::before {
+            content: "🥗";
+            margin: 0 10px;
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 6px 20px rgba(0, 100, 0, 0.1);
+            overflow: hidden;
+            margin-bottom: 30px;
+            transition: transform 0.2s ease;
+        }
+
+        .card:hover {
+            transform: scale(1.01);
+        }
+
+        .card-header {
+            background: linear-gradient(90deg, #5ab55e, #3e9442);
+            color: white;
+            padding: 15px 20px;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .card-body, .card-footer {
+            padding: 20px;
+        }
+
+        .card-footer {
+            background-color: #f0f9f2;
+            text-align: right;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            color: #2f5d2f;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .form-control {
+            border: 1px solid #bde5c3;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 1rem;
+            background-color: #f8fff9;
+            transition: border 0.3s ease;
+            width: 100%;
+            height: 120px;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #58c17d;
+            box-shadow: 0 0 5px rgba(88, 193, 125, 0.5);
+        }
+
+        select[multiple] option:checked {
+            background: #58c17d linear-gradient(0deg, #58c17d 0%, #58c17d 100%);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(90deg, #43a047, #388e3c);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(90deg, #2e7d32, #1b5e20);
+        }
+
+        .btn-link {
+            color: #3c813f;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .btn-link:hover {
+            text-decoration: underline;
+        }
+
+        .collapse {
+            transition: all 0.3s ease-in-out;
+        }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background-color: #d9f2df;
+            color: #2e7031;
+        }
+
+        .alert-error {
+            background-color: #ffe6e6;
+            color: #a94442;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .table th,
+        .table td {
+            padding: 12px 15px;
+            text-align: center;
+            border-bottom: 1px solid #ebf5eb;
+        }
+
+        .table th {
+            background-color: #d1ecd5;
+            color: #2e7031;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .card, .form-group {
+                padding: 10px;
+            }
+
+            .btn-success {
+                width: 100%;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .form-control {
+                height: 100px;
+            }
+        }
+    </style>
+    <body>
+        <div class="container">
+            {% load diet_filters %}
+            <h1 class="text-center my-4">
+                <span class="meal-icon"></span>
+                Default Diet Preferences - {{ hostel|title }}
+                <span class="meal-icon"></span>
+            </h1>
+
+            {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                <div class="alert alert-{% if message.tags == 'error' %}error{% else %}{{ message.tags }}{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="row">
+                <div class="col-md-8 mx-auto">
+                    <form method="POST" action="{% url 'update_default_diet' %}">
+                        {% csrf_token %}
+                        <div class="card shadow-sm">
+                            <div class="card-header">
+                                <h4 class="mb-0">Set Your Default Preferences</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="accordion" id="dietAccordion">
+                                    {% for hostel_name, days in default_diet.items %}
+                                        {% for day_name, day_meals in days.items %}
+                                        <div class="card">
+                                            <div class="card-header" id="heading{{ day_name }}">
+                                                <h5 class="mb-0">
+                                                    <button class="btn btn-link" type="button" data-toggle="collapse" 
+                                                            data-target="#collapse{{ day_name }}" 
+                                                            aria-expanded="false" 
+                                                            aria-controls="collapse{{ day_name }}">
+                                                        {{ day_name|title }}
+                                                    </button>
+                                                </h5>
+                                            </div>
+                                            <div id="collapse{{ day_name }}" class="collapse" 
+                                                 aria-labelledby="heading{{ day_name }}" 
+                                                 data-parent="#dietAccordion">
+                                                <div class="card-body">
+                                                    <div class="form-group">
+                                                        <label>Breakfast</label>
+                                                        <select multiple name="{{ day_name }}_breakfast" class="form-control">
+                                                            {% for item in menu_items.breakfast %}
+                                                            <option value="{{ item.meal_name }}"
+                                                                    {% for selected_meal in day_meals.0|split:"," %}
+                                                                        {% if selected_meal|strip == item.meal_name|strip %}selected{% endif %}
+                                                                    {% endfor %}>
+                                                                {{ item.meal_name }}
+                                                            </option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Lunch</label>
+                                                        <select multiple name="{{ day_name }}_lunch" class="form-control">
+                                                            {% for item in menu_items.lunch %}
+                                                            <option value="{{ item.meal_name }}"
+                                                                    {% for selected_meal in day_meals.1|split:"," %}
+                                                                        {% if selected_meal|strip == item.meal_name|strip %}selected{% endif %}
+                                                                    {% endfor %}>
+                                                                {{ item.meal_name }}
+                                                            </option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Dinner</label>
+                                                        <select multiple name="{{ day_name }}_dinner" class="form-control">
+                                                            {% for item in menu_items.dinner %}
+                                                            <option value="{{ item.meal_name }}"
+                                                                    {% for selected_meal in day_meals.2|split:"," %}
+                                                                        {% if selected_meal|strip == item.meal_name|strip %}selected{% endif %}
+                                                                    {% endfor %}>
+                                                                {{ item.meal_name }}
+                                                            </option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="card-footer text-right">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-save"></i> Save Preferences
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+      <div class="row mt-4">
+    <div class="col-md-8 mx-auto">
+        <div class="card shadow-sm">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0">Current Default Diet</h4>
+            </div>
+            <div class="card-body">
+                {% for hostel_name, days in default_diet.items %}
+                    {% for day_name, day_meals in days.items %}
+                    <div class="day-card mb-4 p-3 border rounded">
+                        <h5 class="day-header mb-3 text-success">{{ day_name|title }}</h5>
+                        
+                        <div class="meal-section mb-3">
+                            <h6 class="meal-title">🍳 Breakfast</h6>
+                            <div class="meal-items">
+                                {% if day_meals.0 %}
+                                    {% for meal in day_meals.0|split:"," %}
+                                    <span class="meal-item badge bg-light text-dark me-2 mb-2">{{ meal|strip }}</span>
+                                    {% endfor %}
+                                {% else %}
+                                    <span class="text-muted">Not set</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="meal-section mb-3">
+                            <h6 class="meal-title">🍲 Lunch</h6>
+                            <div class="meal-items">
+                                {% if day_meals.1 %}
+                                    {% for meal in day_meals.1|split:"," %}
+                                    <span class="meal-item badge bg-light text-dark me-2 mb-2">{{ meal|strip }}</span>
+                                    {% endfor %}
+                                {% else %}
+                                    <span class="text-muted">Not set</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="meal-section">
+                            <h6 class="meal-title">🍛 Dinner</h6>
+                            <div class="meal-items">
+                                {% if day_meals.2 %}
+                                    {% for meal in day_meals.2|split:"," %}
+                                    <span class="meal-item badge bg-light text-dark me-2 mb-2">{{ meal|strip }}</span>
+                                    {% endfor %}
+                                {% else %}
+                                    <span class="text-muted">Not set</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+        </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const buttons = document.querySelectorAll('.btn-link[data-toggle="collapse"]');
+                buttons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        const target = document.querySelector(this.dataset.target);
+                        const isExpanded = this.getAttribute('aria-expanded') === 'true';
+                        document.querySelectorAll('.collapse').forEach(collapse => {
+                            if (collapse !== target) {
+                                collapse.classList.remove('show');
+                                collapse.previousElementSibling.querySelector('.btn-link').setAttribute('aria-expanded', 'false');
+                            }
+                        });
+                        target.classList.toggle('show');
+                        this.setAttribute('aria-expanded', !isExpanded);
+                    });
+                });
+            });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,16 @@
+<!-- customers/templates/customers/customer_detail.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Customer Detail</title>
+</head>
+<body>
+    <h1>Customer Detail</h1>
+    <p>First Name: {{ customer.first_name }}</p>
+    <p>Last Name: {{ customer.last_name }}</p>
+    <p>Email: {{ customer.email }}</p>
+    <p>Phone Number: {{ customer.phone_number }}</p>
+    <p>Address: {{ customer.address }}</p>
+    <a href="{% url 'customer_list' %}">Back to List</a>
+</body>
+</html>

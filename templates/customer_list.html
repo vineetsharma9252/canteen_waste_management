@@ -1,0 +1,18 @@
+<!-- customers/templates/customers/customer_list.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Customer List</title>
+</head>
+<body>
+    <h1>Customer List</h1>
+    <ul>
+        {% for customer in customers %}
+            <li>
+                <a href="{% url 'customer_detail' customer.id %}">{{ customer.first_name }} {{ customer.last_name }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'customer_create' %}">Add New Customer</a>
+</body>
+</html>

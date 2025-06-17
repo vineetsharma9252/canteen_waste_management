@@ -1,0 +1,1165 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hostel Food Waste Management</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <style>
+      :root {
+        --primary: #2e7d32;
+        --primary-light: #4caf50;
+        --secondary: #ff6d00;
+        --secondary-light: #ff9e40;
+        --background: #f5f5f5;
+        --card-bg: #ffffff;
+        --text-dark: #333333;
+        --text-light: #666666;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: "Roboto", sans-serif;
+        background-color: var(--background);
+        color: var(--text-dark);
+      }
+
+      /* Navbar styles */
+      .community {
+        position: relative;
+        margin-left: 4px;
+        padding: 10px 4px;
+        margin-top: 3px;
+      }
+
+      .communitybutton {
+        text-decoration: none;
+        width: 60px;
+        height: 40px;
+        border: none;
+        background-color: rgb(140, 255, 234, 0.3);
+        border-radius: 40px;
+        cursor: pointer;
+        margin-bottom: 5px;
+        font-family: Roboto;
+        z-index: 33;
+        padding: 5px 5px;
+      }
+
+      .communitycontent {
+        position: fixed;
+        top: 60px;
+        left: 380px;
+        background-color: rgba(143, 230, 233, 0.9);
+        width: 220px;
+        border-radius: 10px;
+        display: none;
+        border: solid black 1px;
+        text-decoration: none;
+      }
+
+      .communitybutton:hover ~ .communitycontent,
+      .community:hover .communitycontent {
+        display: block;
+        text-decoration: none;
+      }
+
+      .communitycontent a {
+        display: block;
+        padding: 10px 15px;
+        text-decoration: none;
+        color: rgb(40, 77, 54);
+      }
+
+      .communitycontent a:hover {
+        background-color: rgb(200, 240, 230);
+      }
+
+      .limg {
+        position: fixed;
+        left: 15px;
+        top: 6px;
+        width: 75px;
+        height: 75px;
+        object-fit: contain;
+        border-radius: 50px;
+        margin-top: 5px;
+      }
+
+      @media (max-width: 700px) {
+        .report,
+        .user,
+        .learn {
+          display: none;
+        }
+      }
+      .navbar {
+        display: flex;
+        flex-direction: row;
+        position: fixed;
+        top: 15px;
+        left: 100px;
+        right: 5px;
+        border-radius: 25px;
+        height: 60px;
+        background-color: rgb(45, 170, 128, 1.0);
+        border: solid rgb(80, 158, 146) 2px;
+        align-items: center;
+        z-index: 1000;
+        opacity: 100%;
+      }
+      .navitems {
+        position: fixed;
+        left: 300px;
+        display: inline-block;
+        align-items: center;
+        display: grid;
+        grid-template-columns: 100px 100px 100px 100px 100px;
+        gap: 10px;
+      }
+      .learn,
+      .user,
+      .report {
+        padding-top: 13px;
+        height: 45px;
+      }
+      .learn .learncontent,
+      .user .usercontent,
+      .report .reportcontent {
+        position: fixed;
+        top: 60px;
+        background-color: rgba(143, 230, 233, 0.9);
+        width: 220px;
+        border-radius: 10px;
+      }
+      .learn .learncontent,
+      .user .usercontent,
+      .report .reportcontent {
+        border: solid black 1px;
+      }
+      .learn a,
+      .user a,
+      .report a {
+        display: none;
+        padding: 10px 15px;
+        text-decoration: none;
+        color: rgb(40, 77, 54);
+      }
+      .learnbutton,
+      .userbutton,
+      .reportbutton,
+      .loginbutton {
+        width: 80px;
+        height: 30px;
+        border: none;
+        background-color: rgb(117, 240, 199, 0.3);
+        border-radius: 15px;
+        cursor: pointer;
+        margin-bottom: 5px;
+        font-family: Roboto;
+        z-index: 33;
+      }
+      .WSAButton {
+        width: 100px;
+        height: 35px;
+        border: none;
+        background-color: rgb(255, 69, 0);
+        color: white;
+        border-radius: 20px;
+        cursor: pointer;
+        font-family: Roboto;
+        font-weight: bold;
+        margin-left: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        animation: highlight 4s infinite;
+      }
+      .WSAButton a {
+        text-decoration: none;
+        color: white;
+      }
+      .WSAButton:hover {
+        background-color: rgb(255, 140, 0);
+      }
+
+      @keyframes highlight {
+        0% {
+          box-shadow: 0 0 5px 2px rgba(255, 69, 0, 0.6);
+        }
+        50% {
+          box-shadow: 0 0 10px 3px rgba(255, 140, 0, 0.8);
+        }
+        100% {
+          box-shadow: 0 0 5px 4px rgba(255, 69, 0, 0.6);
+        }
+      }
+
+      .learn:hover a,
+      .user:hover a,
+      .report:hover a {
+        display: block;
+      }
+      .loginbutton a {
+        color: rgb(10, 29, 17);
+        text-decoration: none;
+      }
+      .loginbutton {
+        position: fixed;
+        right: 15%;
+        top: 26px;
+      }
+      .loginbutton:hover {
+        border: solid black 1.2px;
+      }
+
+      /* New styles for enhanced page */
+      .hero {
+        height: 80vh;
+        background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+          url("https://images.unsplash.com/photo-1606787366850-de6330128bfc?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80");
+        background-size: cover;
+        background-position: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        color: white;
+        padding: 0 20px;
+        margin-top: 60px;
+      }
+
+      .hero h1 {
+        font-size: 3.5rem;
+        margin-bottom: 20px;
+        animation: fadeInDown 1s ease;
+      }
+
+      .hero p {
+        font-size: 1.5rem;
+        max-width: 800px;
+        margin-bottom: 30px;
+        animation: fadeInUp 1s ease 0.3s both;
+      }
+
+      .cta-button {
+        padding: 15px 30px;
+        background-color: var(--secondary);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        animation: fadeIn 1s ease 0.6s both;
+        text-decoration: none;
+      }
+
+      .cta-button:hover {
+        background-color: var(--secondary-light);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      }
+
+      .stats-section {
+        padding: 80px 20px;
+        background-color: var(--card-bg);
+      }
+
+      .section-title {
+        text-align: center;
+        font-size: 2.5rem;
+        margin-bottom: 60px;
+        color: var(--primary);
+        position: relative;
+      }
+
+      .section-title::after {
+        content: "";
+        position: absolute;
+        bottom: -15px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100px;
+        height: 4px;
+        background-color: var(--secondary);
+      }
+
+      .stats-container {
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .stat-card {
+        background-color: var(--card-bg);
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        width: 250px;
+        margin: 20px;
+        text-align: center;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .stat-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+      }
+
+      .stat-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background-color: var(--primary);
+      }
+
+      .stat-icon {
+        font-size: 3rem;
+        color: var(--primary);
+        margin-bottom: 20px;
+      }
+
+      .stat-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: var(--primary);
+        margin: 15px 0;
+      }
+
+      .stat-label {
+        color: var(--text-light);
+        font-size: 1.1rem;
+      }
+
+      .solutions-section {
+        padding: 80px 20px;
+        background-color: var(--background);
+      }
+
+      .solution-tabs {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 40px;
+        flex-wrap: wrap;
+      }
+
+      .tab-button {
+        padding: 12px 25px;
+        margin: 0 10px;
+        background-color: transparent;
+        border: none;
+        border-bottom: 3px solid transparent;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        color: var(--text-light);
+      }
+
+      .tab-button.active {
+        color: var(--primary);
+        border-bottom: 3px solid var(--primary);
+        font-weight: bold;
+      }
+
+      .tab-content {
+        display: none;
+        max-width: 1000px;
+        margin: 0 auto;
+        background-color: var(--card-bg);
+        border-radius: 15px;
+        padding: 40px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      }
+
+      .tab-content.active {
+        display: block;
+        animation: fadeIn 0.5s ease;
+      }
+
+      .solution-title {
+        font-size: 1.8rem;
+        color: var(--primary);
+        margin-bottom: 20px;
+      }
+
+      .solution-image {
+        width: 100%;
+        height: 300px;
+        object-fit: cover;
+        border-radius: 10px;
+        margin-bottom: 20px;
+      }
+
+      .testimonials-section {
+        padding: 80px 20px;
+        background-color: var(--card-bg);
+      }
+
+      .testimonial-slider {
+        max-width: 800px;
+        margin: 0 auto;
+        position: relative;
+      }
+
+      .testimonial {
+        background-color: var(--background);
+        padding: 30px;
+        border-radius: 15px;
+        text-align: center;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        display: none;
+      }
+
+      .testimonial.active {
+        display: block;
+        animation: fadeIn 0.5s ease;
+      }
+
+      .testimonial-text {
+        font-size: 1.2rem;
+        font-style: italic;
+        margin-bottom: 20px;
+        color: var(--text-dark);
+      }
+
+      .testimonial-author {
+        font-weight: bold;
+        color: var(--primary);
+      }
+
+      .testimonial-role {
+        color: var(--text-light);
+        font-size: 0.9rem;
+      }
+
+      .slider-controls {
+        display: flex;
+        justify-content: center;
+        margin-top: 30px;
+      }
+
+      .slider-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background-color: #ccc;
+        margin: 0 5px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .slider-dot.active {
+        background-color: var(--primary);
+        transform: scale(1.2);
+      }
+
+      .faq-section {
+        padding: 80px 20px;
+        background-color: var(--card-bg);
+      }
+
+      .faq-container {
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      .faq-item {
+        margin-bottom: 15px;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .faq-question {
+        padding: 20px;
+        background-color: var(--primary);
+        color: white;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: all 0.3s ease;
+      }
+
+      .faq-question:hover {
+        background-color: var(--primary-light);
+      }
+
+      .faq-answer {
+        padding: 0 20px;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+        background-color: white;
+      }
+
+      .faq-answer.active {
+        padding: 20px;
+        max-height: 500px;
+      }
+
+      .footer {
+        background-color: var(--primary);
+        color: white;
+        padding: 40px 20px;
+        text-align: center;
+      }
+
+      .footer-links {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-bottom: 30px;
+      }
+
+      .footer-link {
+        color: white;
+        margin: 0 15px;
+        text-decoration: none;
+        transition: color 0.3s ease;
+      }
+
+      .footer-link:hover {
+        color: var(--secondary-light);
+      }
+
+      .social-icons {
+        margin: 20px 0;
+      }
+
+      .social-icon {
+        color: white;
+        font-size: 1.5rem;
+        margin: 0 10px;
+        transition: color 0.3s ease;
+      }
+
+      .social-icon:hover {
+        color: var(--secondary-light);
+      }
+
+      /* Animations */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes fadeInDown {
+        from {
+          opacity: 0;
+          transform: translateY(-30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Responsive adjustments */
+      @media (max-width: 768px) {
+        .hero h1 {
+          font-size: 2.5rem;
+        }
+
+        .hero p {
+          font-size: 1.2rem;
+        }
+
+        .stat-card {
+          width: 100%;
+          max-width: 300px;
+        }
+
+        .tab-content {
+          padding: 20px;
+        }
+      }
+    </style>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header class="header">
+      <div class="navbar">
+        <div class="logo">
+          <img
+            class="limg"
+            src="https://img.freepik.com/premium-vector/waste-management-vector-logo-design_410429-5960.jpg"
+          />
+        </div>
+        <div class="navitems">
+          <div class="learn">
+            <button class="learnbutton">Learn</button>
+            <div class="learncontent">
+              <a href="/Recycle_guide">Waste Management Guide</a>
+              <a href="/Waste_Quiz">Quiz</a>
+              <a href="/fact">Facts</a>
+            </div>
+          </div>
+          <div class="user">
+            <button class="userbutton">User</button>
+            <div class="usercontent">
+              <a href="/DashBoard">Dashboard</a>
+              <a href="/Waste_FAQ">FAQ</a>
+            </div>
+          </div>
+          <div class="report">
+            <button class="reportbutton">Report</button>
+            <div class="reportcontent">
+              <a href="/report_page">Report</a>
+              <a href="_black"></a>
+              <a href="/generater_page">Ask GPT</a>
+            </div>
+          </div>
+          <div class="report">
+            <button class="reportbutton">Prebooking</button>
+            <div class="reportcontent">
+              <a href="/prebooking">Prebook Your meal</a>
+            </div>
+          </div>
+          <div class="WSAButton">
+            <button class="WSAButton">
+              <a href="/classify">WSA</a>
+            </button>
+          </div>
+          <div class="login">
+            <button class="loginbutton"><a href="/">{{ user }}</a></button>
+          </div>
+        </div>
+        <div class="community">
+          <button class="communitybutton">
+            <a href="/community" text-decoration="none">
+              <i class="fas fa-users"></i>
+            </a>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <h1>Transforming Food Waste into Opportunity</h1>
+      <p>
+        Join our mission to reduce food waste in hostel messes through
+        innovative solutions and sustainable practices
+      </p>
+      <a href="/prebooking" class="cta-button">Prebook Your Meal Now</a>
+    </section>
+
+    <!-- Statistics Section -->
+    <section class="stats-section">
+      <h2 class="section-title">Our Food Waste Challenge</h2>
+      <div class="stats-container">
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-utensils"></i></div>
+          <div class="stat-number">59.57kg</div>
+          <div class="stat-label">Average breakfast waste per day</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-drumstick-bite"></i></div>
+          <div class="stat-number">68.14kg</div>
+          <div class="stat-card-label">Average lunch waste per day</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-moon"></i></div>
+          <div class="stat-number">65.71kg</div>
+          <div class="stat-label">Average dinner waste per day</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Solutions Section -->
+    <section class="solutions-section">
+      <h2 class="section-title">Our Innovative Solutions</h2>
+
+      <div class="solution-tabs">
+        <button class="tab-button active" data-tab="prebooking">
+          Pre-Booking
+        </button>
+        <button class="tab-button" data-tab="rfid">RFID</button>
+        <button class="tab-button" data-tab="jit">JIT Model</button>
+        <button class="tab-button" data-tab="weighing">Self-Weighing</button>
+        <button class="tab-button" data-tab="portion">Portion Control</button>
+        <button class="tab-button" data-tab="menu">Menu Optimization</button>
+        <button class="tab-button" data-tab="biodegradable">
+          Biodegradable & Biogas
+        </button>
+        <button class="tab-button" data-tab="sorting">Sorting & Reusing</button>
+        <button class="tab-button" data-tab="community">
+          Community Engagement
+        </button>
+      </div>
+
+      <div id="prebooking" class="tab-content active">
+        <img
+          src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+          alt="Prebooking System"
+          class="solution-image"
+        />
+        <h3 class="solution-title">Pre-Booking System</h3>
+        <p>
+          A digital platform that allows students to pre-book their meals in
+          advance, helping the mess staff prepare only the required quantity of
+          food. Features include:
+        </p>
+        <ul>
+          <li>Meal skipping notifications</li>
+          <li>Automated refunds for skipped meals</li>
+          <li>Real-time food quantity tracking</li>
+          <li>Penalty system for habitual no-shows</li>
+        </ul>
+      </div>
+
+      <div id="rfid" class="tab-content">
+        <img
+          src="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+          alt="RFID Tracking"
+          class="solution-image"
+        />
+        <h3 class="solution-title">RFID Attendance Tracking</h3>
+        <p>
+          Implementing RFID cards for accurate meal attendance tracking with:
+        </p>
+        <ul>
+          <li>Automated attendance recording</li>
+          <li>Real-time meal consumption data</li>
+          <li>Notifications for skipped meals</li>
+          <li>Penalty system integration</li>
+        </ul>
+      </div>
+
+      <div id="jit" class="tab-content">
+        <img
+          src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+          alt="JIT Model"
+          class="solution-image"
+        />
+        <h3 class="solution-title">Just-in-Time (JIT) Model</h3>
+        <p>
+          The Just-in-Time (JIT) model ensures materials are received only as
+          needed for production, minimizing inventory and ensuring fresh
+          supplies. Popularized by Toyota in the 1970s as the Toyota Production
+          System, it relies on precise demand forecasting, reliable suppliers,
+          and a culture of continuous improvement. In hostel mess management,
+          JIT aligns with pre-booking to optimize food preparation and reduce
+          waste.
+        </p>
+        <h4>Advantages of JIT in Mess Management</h4>
+        <ul>
+          <li>
+            <strong>Lower Costs & Better Cash Flow:</strong> Reduces storage
+            costs by avoiding excess stockpiling, freeing up resources for other
+            needs.
+          </li>
+          <li>
+            <strong>Ensures Items Are In-Stock:</strong> Timely deliveries based
+            on pre-booking ensure food availability, improving satisfaction and
+            reducing lead times.
+          </li>
+          <li>
+            <strong>Improved Efficiency:</strong> Streamlined processes and
+            smaller batches minimize waiting times and enable quick response to
+            demand changes.
+          </li>
+          <li>
+            <strong>Reduced Waste:</strong> Faster stock turnover prevents
+            spoilage, saving money by avoiding unnecessary food preparation.
+          </li>
+          <li>
+            <strong>Smoother Production Cycles:</strong> Pull-based systems
+            ensure food is prepared based on actual demand, reducing
+            overproduction.
+          </li>
+          <li>
+            <strong>Better Quality:</strong> Smaller inventory volumes allow
+            better quality control, enabling early detection of issues and
+            consistent food quality.
+          </li>
+          <li>
+            <strong>Enhanced Student Discipline:</strong> Encourages students to
+            plan meals, fostering timely eating habits and reducing skipped
+            meals.
+          </li>
+        </ul>
+      </div>
+
+      <div id="weighing" class="tab-content">
+        <img
+          src="https://images.unsplash.com/photo-1509440159596-0249088772ff?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+          alt="Self Weighing"
+          class="solution-image"
+        />
+        <h3 class="solution-title">Self-Weighing Stations</h3>
+        <p>
+          Designated bins with weighing machines to encourage responsibility:
+        </p>
+        <ul>
+          <li>Visual feedback on food waste</li>
+          <li>Quantitative data collection</li>
+          <li>Increased student awareness</li>
+          <li>Behavior modification through data</li>
+        </ul>
+      </div>
+
+      <div id="portion" class="tab-content">
+        <img
+          src="https://images.unsplash.com/photo-1547592180-85f173990554?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+          alt="Portion Control"
+          class="solution-image"
+        />
+        <h3 class="solution-title">Portion Control Measures</h3>
+        <p>Strategies to reduce overserving of food:</p>
+        <ul>
+          <li>Smaller serving utensils</li>
+          <li>Staff training on portion control</li>
+          <li>Tasting portions for new items</li>
+          <li>Continuous monitoring and adjustment</li>
+        </ul>
+      </div>
+
+      <div id="menu" class="tab-content">
+        <img
+          src="https://images.unsplash.com/photo-1544025162-d76694265947?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+          alt="Menu Optimization"
+          class="solution-image"
+        />
+        <h3 class="solution-title">Menu Optimization</h3>
+        <p>Data-driven menu planning to minimize waste:</p>
+        <ul>
+          <li>Seasonal and local ingredients</li>
+          <li>Cross-utilization of ingredients</li>
+          <li>Dynamic portion sizing</li>
+          <li>Student preference analysis</li>
+        </ul>
+      </div>
+
+      <div id="biodegradable" class="tab-content">
+        <img
+          src="https://tse3.mm.bing.net/th/id/OIP.rX4wcyCP8J-2b-Ad7HPxSAHaHa?r=0&rs=1&pid=ImgDetMain&cb=idpwebpc1"
+          alt="Biodegradable and Biogas"
+          class="solution-image"
+        />
+        <h3 class="solution-title">Biodegradable and Biogas Solutions</h3>
+        <p>Converting food waste into valuable resources:</p>
+        <ul>
+          <li>
+            High organic content (70-90%) ideal for biogas production, yielding
+            300-800 liters per kg of volatile solids with 50-70% methane.
+          </li>
+          <li>
+            Production of organic fertilizers and enzymes, supporting
+            sustainable agriculture.
+          </li>
+          <li>
+            Biodegradable waste processed to reduce landfill impact and promote
+            eco-friendly disposal.
+          </li>
+        </ul>
+      </div>
+
+      <div id="sorting" class="tab-content">
+        <img
+          src="https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+          alt="Sorting and Reusing"
+          class="solution-image"
+        />
+        <h3 class="solution-title">Sorting and Reusing Food Waste</h3>
+        <p>Adopting alternative cooking techniques to minimize waste:</p>
+        <ul>
+          <li>Blanching to preserve color and flavor of vegetables.</li>
+          <li>Stir-frying to repurpose leftovers into new dishes.</li>
+          <li>
+            Pickling and fermenting to extend the shelf life of imperfect
+            produce.
+          </li>
+        </ul>
+      </div>
+
+      <div id="community" class="tab-content">
+        <img
+          src="https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+          alt="Community Engagement"
+          class="solution-image"
+        />
+        <h3 class="solution-title">Community Engagement</h3>
+        <p>Utilizing leftover food responsibly and supporting the community:</p>
+        <ul>
+          <li>
+            <strong>How to Use Leftover Food:</strong> Transform leftovers into
+            new dishes like soups, stews, or stir-fries to extend their
+            usability.
+          </li>
+          <li>
+            <strong>Give to Needy People:</strong> Partner with local
+            organizations to collect unserved counter-cooked food and distribute
+            it to those in need, addressing hunger in nearby communities.
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials-section">
+      <h2 class="section-title">What People Are Saying</h2>
+
+      <div class="testimonial-slider">
+        <div class="testimonial active">
+          <p class="testimonial-text">
+            "The pre-booking system has significantly reduced our food waste
+            while making meal planning easier for students and staff alike."
+          </p>
+          <div class="testimonial-author">Mr. Mahesh</div>
+          <div class="testimonial-role">Mess Manager, Kapili Hostel</div>
+        </div>
+
+        <div class="testimonial">
+          <p class="testimonial-text">
+            "Seeing the actual weight of my plate waste has made me more
+            conscious about portion sizes and food waste. It's changed my eating
+            habits."
+          </p>
+          <div class="testimonial-author">Yash</div>
+          <div class="testimonial-role">Student, IIT Guwahati</div>
+        </div>
+
+        <div class="testimonial">
+          <p class="testimonial-text">
+            "The new system helps us prepare just the right amount of food.
+            We're wasting less and saving money while still serving delicious
+            meals."
+          </p>
+          <div class="testimonial-author">Jayanta Gogoi</div>
+          <div class="testimonial-role">Mess Worker</div>
+        </div>
+
+        <div class="slider-controls">
+          <div class="slider-dot active" data-slide="0"></div>
+          <div class="slider-dot" data-slide="1"></div>
+          <div class="slider-dot" data-slide="2"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq-section">
+      <h2 class="section-title">Frequently Asked Questions</h2>
+
+      <div class="faq-container">
+        <div class="faq-item">
+          <div class="faq-question">
+            How does the pre-booking system work?
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            <p>
+              Students can log in to the system and pre-book their meals for the
+              next day. The mess receives this information and prepares only the
+              required quantity of food. If you skip a meal you've booked,
+              you'll receive a penalty after three strikes.
+            </p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            What happens if I forget to pre-book my meal?
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            <p>
+              We keep a small buffer for unexpected guests, but priority and
+              guaranteed portions are given to those who pre-book. We encourage
+              all students to make pre-booking a daily habit.
+            </p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            How does the self-weighing station help reduce waste?
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            <p>
+              The weighing stations provide immediate feedback on how much food
+              you're wasting. This visual and quantitative data helps students
+              become more mindful of their portion sizes and consumption habits.
+            </p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            What happens to the food waste that's collected?
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            <p>
+              All collected food waste is either composted or sent to biogas
+              plants where it's converted into renewable energy. Nothing goes to
+              landfill.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-links">
+        <a href="#" class="footer-link">About Us</a>
+        <a href="#" class="footer-link">Our Solutions</a>
+        <a href="#" class="footer-link">Impact</a>
+        <a href="#" class="footer-link">Contact</a>
+        <a href="/prebooking" class="footer-link">Prebook Meals</a>
+      </div>
+
+      <div class="social-icons">
+        <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+        <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+        <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+      </div>
+
+      <p>
+        © 2024 Hostel Food Waste Management Initiative. All rights reserved.
+      </p>
+      <p>
+        Contact us:
+        <a
+          href="mailto:foodwaste@iitg.ac.in"
+          style="color: var(--secondary-light)"
+          >foodwaste@iitg.ac.in</a
+        >
+      </p>
+    </footer>
+
+    <script>
+      // Tab functionality
+      const tabButtons = document.querySelectorAll(".tab-button");
+      const tabContents = document.querySelectorAll(".tab-content");
+
+      tabButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          tabButtons.forEach((btn) => btn.classList.remove("active"));
+          tabContents.forEach((content) => content.classList.remove("active"));
+
+          button.classList.add("active");
+          const tabId = button.getAttribute("data-tab");
+          document.getElementById(tabId).classList.add("active");
+        });
+      });
+
+      // Testimonial slider functionality
+      const testimonials = document.querySelectorAll(".testimonial");
+      const dots = document.querySelectorAll(".slider-dot");
+      let currentTestimonial = 0;
+
+      function showTestimonial(index) {
+        testimonials.forEach((testimonial) =>
+          testimonial.classList.remove("active")
+        );
+        dots.forEach((dot) => dot.classList.remove("active"));
+
+        testimonials[index].classList.add("active");
+        dots[index].classList.add("active");
+        currentTestimonial = index;
+      }
+
+      dots.forEach((dot, index) => {
+        dot.addEventListener("click", () => {
+          showTestimonial(index);
+        });
+      });
+
+      setInterval(() => {
+        let nextTestimonial = (currentTestimonial + 1) % testimonials.length;
+        showTestimonial(nextTestimonial);
+      }, 5000);
+
+      // FAQ accordion functionality
+      const faqQuestions = document.querySelectorAll(".faq-question");
+
+      faqQuestions.forEach((question) => {
+        question.addEventListener("click", () => {
+          const answer = question.nextElementSibling;
+          const isActive = answer.classList.contains("active");
+
+          document.querySelectorAll(".faq-answer").forEach((ans) => {
+            ans.classList.remove("active");
+          });
+
+          document.querySelectorAll(".faq-question i").forEach((icon) => {
+            icon.classList.remove("fa-chevron-up");
+            icon.classList.add("fa-chevron-down");
+          });
+
+          if (!isActive) {
+            answer.classList.add("active");
+            question.querySelector("i").classList.remove("fa-chevron-down");
+            question.querySelector("i").classList.add("fa-chevron-up");
+          }
+        });
+      });
+
+      // Animation on scroll
+      const animateOnScroll = () => {
+        const elements = document.querySelectorAll(
+          ".stat-card, .section-title, .solution-tabs"
+        );
+
+        elements.forEach((element) => {
+          const elementPosition = element.getBoundingClientRect().top;
+          const windowHeight = window.innerHeight;
+
+          if (elementPosition < windowHeight - 100) {
+            element.style.opacity = "1";
+            element.style.transform = "translateY(0)";
+          }
+        });
+      };
+
+      document
+        .querySelectorAll(".stat-card, .section-title, .solution-tabs")
+        .forEach((el) => {
+          el.style.opacity = "0";
+          el.style.transform = "translateY(20px)";
+          el.style.transition = "opacity 0.5s ease, transform 0.5s ease";
+        });
+
+      window.addEventListener("scroll", animateOnScroll);
+      window.addEventListener("load", animateOnScroll);
+    </script>
+  </body>
+</html>

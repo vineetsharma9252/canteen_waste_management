@@ -1,0 +1,16 @@
+<!-- customers/templates/customers/customer_form.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add New Customer</title>
+</head>
+<body>
+    <h1>Add New Customer</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save</button>
+    </form>
+    <a href="{% url 'customer_list' %}">Back to List</a>
+</body>
+</html>

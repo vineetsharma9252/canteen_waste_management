@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Community - Food Waste Reduction at IIT Guwahati</title>
+    <style>
+      /* General Styles */
+      body {
+        font-family: Arial, sans-serif;
+        color: #333;
+        background-color: #f1f8e9;
+        margin: 0;
+        padding: 0;
+        text-align: center;
+      }
+
+      /* Messages */
+      .messages {
+        margin: 20px auto;
+        width: 80%;
+        max-width: 600px;
+      }
+
+      .messages .success {
+        color: #00796b;
+        font-weight: bold;
+      }
+
+      .messages .error {
+        color: #d32f2f;
+        font-weight: bold;
+      }
+
+      /* Return Home Button */
+      .return-btn {
+        display: inline-block;
+        text-decoration: none;
+        color: white;
+        background-color:rgb(255, 146, 5);
+        padding: 10px 20px;
+        border-radius: 30px;
+        font-size: 1.2em;
+        font-weight: bold;
+        margin-top: 20px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        border: 2px solid transparent;
+      }
+
+      .return-btn:hover {
+        background: linear-gradient(90deg, #004d40, #00796b);
+        color: white;
+        border: 2px solid #004d40;
+        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+        transform: scale(1.05);
+      }
+
+      /* Header Styles */
+      h1 {
+        color: rgb(45, 170, 128);
+        margin-top: 20px;
+        font-size: 2.5em;
+      }
+
+      h2 {
+        color: rgb(45, 170, 128);
+        margin: 10px 0;
+        font-size: 1.8em;
+      }
+
+      p {
+        font-size: 1.2em;
+        color: #666;
+        margin: 10px 20px;
+      }
+
+      /* Horizontal Scroller for Community Stories */
+      .stories-container {
+        display: flex;
+        flex-direction: row;
+        overflow-x: auto;
+        padding: 20px;
+        gap: 20px;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        width: 80%;
+        max-width: 1200px;
+        margin: 20px auto;
+      }
+
+      .stories-container::-webkit-scrollbar {
+        display: none;
+      }
+
+      .stories-container {
+        -ms-overflow-style: none; /* IE and Edge */
+        scrollbar-width: none; /* Firefox */
+      }
+
+      /* Individual Story Cards */
+      .story {
+        flex: 0 0 300px;
+        scroll-snap-align: start;
+        background-color: #ffffff;
+        border: 2px solid rgb(45, 170, 128);
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        text-align: left;
+      }
+
+      .story h3 {
+        color: rgb(45, 170, 128);
+        font-size: 1.5em;
+        margin-top: 0;
+      }
+
+      .story p {
+        color: #555;
+      }
+
+      .story .date {
+        font-size: 0.9em;
+        color: #888;
+      }
+
+      /* Featured Stories БорилкиStories Container */
+      .featured-stories-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 20px;
+      }
+
+      /* New Story Form */
+      .new-story-form {
+        margin: 30px 0;
+        background-color: #ffffff;
+        padding: 50px;
+        border: 2px solid rgb(45, 170, 128);
+        border-radius: 10px;
+
+        width: 90%;
+        max-width: 600px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        text-align: left;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .new-story-form input,
+      .new-story-form textarea {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #00796b;
+        border-radius: 5px;
+      }
+
+      .new-story-form button {
+        background-color: #00796b;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1em;
+        transition: background-color 0.3s ease;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .new-story-form button:hover {
+        background-color: rgb(45, 170, 128);
+      }
+
+      /* Footer Styles */
+      footer {
+        margin-top: 50px;
+        background-color: #004d40;
+        color: white;
+        padding: 20px;
+        font-size: 0.9em;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Return Button -->
+    <a href="/homepage" class="return-btn">Return Home</a>
+
+    <h1>Food Waste Reduction Stories</h1>
+    <h2>Share Your Experiences at IIT Guwahati</h2>
+    <p>
+      Share your stories, tips, and experiences about reducing food waste in the
+      hostel messes at IIT Guwahati. Help build a culture of sustainability and
+      responsibility by sharing how you minimize food waste.
+    </p>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="messages">
+      {% for message in messages %}
+      <p class="{{ message.tags }}">{{ message }}</p>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- New Story Form -->
+    <div class="new-story-form">
+      <h3>Submit Your Food Waste Reduction Story</h3>
+      <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="title">Your Story title:</label>
+        <input
+          type="text"
+          name="title"
+          id="title"
+          placeholder="title"
+          maxlength="30"
+          required
+        />
+
+        <label for="content">Your Story:</label>
+        <textarea
+          name="content"
+          id="content"
+          rows="5"
+          placeholder="Share your experience with reducing food waste in the hostel mess..."
+          maxlength="1000"
+          required
+        ></textarea>
+
+        <label for="image">Upload Image (optional):</label>
+        <input type="file" name="image" id="image" accept="image/*" />
+
+        <button type="submit">Submit Story</button>
+      </form>
+    </div>
+
+    <!-- Community Stories Section -->
+    <h2>Community Stories</h2>
+    <div class="stories-container">
+      {%if blog_post %} {% for post in blog_post %}
+      <div class="story">
+        <h3>{{ post.title|default:"Anonymous" }}</h3>
+        <p class="date">Posted on: {{ post.date }}</p>
+        <p>{{ post.blog_post }}</p>
+        <h4>by:{{post.name}}</h4>
+      </div>
+      {% empty %}
+      <p>No community stories yet.</p>
+      {% endfor %} {% endif %}
+    </div>
+
+    <!-- Featured Stories Section -->
+    <h2>Featured Stories</h2>
+    <div class="featured-stories-container">
+      <!-- Story 1: Mess Manager -->
+      <div class="story">
+        <h3>A Mess Manager's Plea</h3>
+        <p>
+          As the mess manager at Kapili Hostel, Mr. Mahesh sees students take
+          large portions only to discard them. "It pains me to see food wasted
+          when so many go hungry," he says. He hopes students take only what
+          they need to reduce waste and ease the burden of reporting high
+          wastage levels.
+        </p>
+      </div>
+
+      <!-- Story 2: Mess Worker -->
+      <div class="story">
+        <h3>A Worker's Perspective on Food Waste</h3>
+        <p>
+          Mr. Rajesh, a mess worker from Bihar, works tirelessly to prepare
+          meals at Kapili Hostel. "It’s disheartening when students take excess
+          food and throw it away," he shares. He urges everyone to take only
+          what they need, as his own family sometimes goes to bed hungry.
+        </p>
+      </div>
+
+      <!-- Story 3: Student -->
+      <div class="story">
+        <h3>A Student's Call for Change</h3>
+        <p>
+          Yash, a student at Kapili Hostel, is frustrated by the lack of portion
+          control. "Standardized servings lead to waste because we can’t choose
+          smaller portions," he says. He hopes for flexible meal options and
+          composting systems to manage leftovers responsibly.
+        </p>
+      </div>
+    </div>
+
+    <footer>
+      <p>
+        © 2025 Food Waste Reduction Initiative, IIT Guwahati. All rights
+        reserved.
+      </p>
+      <p>Contact us: sustainability@iitg.ac.in</p>
+    </footer>
+  </body>
+</html>

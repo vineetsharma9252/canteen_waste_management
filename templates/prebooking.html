@@ -1,0 +1,1277 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prebook Your Meal - Hostel Canteen</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --green: #2e7d32;
+        --light-green: #4caf50;
+        --white: #ffffff;
+        --gray: #f5f5f5;
+        --dark-gray: #333;
+        --error-red: #d32f2f;
+        --yellow: #ffca28;
+        --shadow: rgba(0, 0, 0, 0.1);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Poppins", sans-serif;
+        background: linear-gradient(135deg, var(--gray) 0%, var(--white) 100%);
+        min-height: 100vh;
+        color: var(--dark-gray);
+        position: relative;
+      }
+
+      .navbar {
+        background-color: var(--green);
+        padding: 1rem;
+        box-shadow: 0 2px 10px var(--shadow);
+      }
+
+      .navbar ul {
+        list-style: none;
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+      }
+
+      .navbar a {
+        color: var(--white);
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.3s;
+      }
+
+      .navbar a:hover,
+      .navbar a:focus {
+        color: var(--light-green);
+        outline: none;
+      }
+
+      .main-content {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        position: relative;
+      }
+
+      .container {
+        padding: 2rem;
+        background: var(--white);
+        border-radius: 10px;
+        box-shadow: 0 4px 15px var(--shadow);
+      }
+
+      .sidebar {
+        width: 300px;
+        background: var(--white);
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px var(--shadow);
+        position: fixed;
+        top: 0;
+        right: -320px; /* Hidden by default */
+        height: 100%;
+        max-height: 100vh;
+        overflow-y: auto;
+        transition: right 0.3s ease-in-out;
+        z-index: 1000;
+      }
+
+      .sidebar.active {
+        right: 0; /* Slide in when active */
+      }
+
+      .sidebar h2 {
+        color: var(--green);
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .sidebar .plate-icon {
+        width: 24px;
+        height: 24px;
+        background: url("https://img.icons8.com/ios-filled/50/000000/meal.png")
+          no-repeat center;
+        background-size: contain;
+      }
+
+      .sidebar .booking-list {
+        list-style: none;
+        font-size: 0.9rem;
+      }
+
+      .sidebar .booking-item {
+        margin-bottom: 1rem;
+        padding: 0.5rem;
+        border-left: 3px solid var(--green);
+        background: var(--gray);
+        border-radius: 5px;
+      }
+
+      .sidebar .booking-item p {
+        margin: 0.25rem 0;
+      }
+
+      .sidebar .no-bookings {
+        color: var(--dark-gray);
+        font-style: italic;
+      }
+
+      .toggle-sidebar-btn {
+        background-color: var(--green);
+        color: var(--white);
+        border: none;
+        padding: 0.75rem 2rem;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.45s;
+        display: block;
+        margin: 1rem auto;
+      }
+
+      .toggle-sidebar-btn:hover {
+        background-color: var(--light-green);
+        transform: translateY(-2px);
+      }
+
+      .toggle-sidebar-btn:focus {
+        outline: 2px solid var(--light-green);
+        outline-offset: 2px;
+      }
+
+      h1 {
+        text-align: center;
+        color: var(--green);
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        font-size: 2rem;
+      }
+
+      .recycle-icon {
+        width: 30px;
+        height: 30px;
+        background: url("https://img.icons8.com/ios-filled/50/000000/recycle-sign.png")
+          no-repeat center;
+        background-size: contain;
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--dark-gray);
+      }
+
+      input[type="date"],
+      select {
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px solid var(--green);
+        border-radius: 5px;
+        font-size: 1rem;
+        transition: border-color 0.3s, box-shadow 0.3s;
+        background: var(--white);
+      }
+
+      input[type="date"]:focus,
+      select:focus {
+        border-color: var(--light-green);
+        box-shadow: 0 0 5px rgba(76, 175, 80, 0.2);
+        outline: none;
+      }
+
+      .meal-type-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .meal-icon {
+        width: 20px;
+        height: 20px;
+        background-size: contain;
+        background-repeat: no-repeat;
+      }
+
+      .meal-icon.breakfast {
+        background-image: url("https://img.icons8.com/ios-filled/50/000000/sunrise.png");
+      }
+
+      .meal-icon.lunch {
+        background-image: url("https://img.icons8.com/ios-filled/50/000000/lunch.png");
+      }
+
+      .meal-icon.dinner {
+        background-image: url("https://img.icons8.com/50/000000/moon-symbol.png");
+      }
+
+      .food-items {
+        display: none;
+        flex-direction: column;
+        gap: 0.5rem;
+        animation: fadeIn 0.3s ease-in;
+      }
+
+      .food-items.active {
+        display: flex;
+      }
+
+      .food-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+      }
+
+      .food-item:hover {
+        background-color: var(--gray);
+      }
+
+      input[type="checkbox"] {
+        accent-color: var(--green);
+        width: 18px;
+        height: 18px;
+      }
+
+      input[type="checkbox"]:focus {
+        outline: 2px solid var(--light-green);
+        outline-offset: 2px;
+      }
+
+      input[type="number"] {
+        width: 60px;
+        padding: 0.25rem;
+        border: 2px solid var(--green);
+        border-radius: 5px;
+        font-size: 0.9rem;
+        text-align: center;
+        transition: border-color 0.3s;
+      }
+
+      input[type="number"]:focus {
+        border-color: var(--light-green);
+        outline: none;
+      }
+
+      input[type="number"]:disabled {
+        background-color: var(--gray);
+        border-color: 0.6;
+        cursor: not-allowed;
+      }
+
+      .food-item.selected {
+        background-color: rgba(76, 175, 80, 0.1);
+      }
+
+      .summary {
+        margin-top: 1rem;
+        padding: 1rem;
+        background: var(--gray);
+        border-radius: 5px;
+        font-size: 0.9rem;
+      }
+
+      .summary p {
+        margin-bottom: 0.5rem;
+      }
+
+      .summary .count {
+        font-weight: 600;
+        color: var(--green);
+      }
+
+      button {
+        background-color: var(--green);
+        color: var(--white);
+        border: none;
+        padding: 0.75rem 2rem;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.1s;
+        margin: 0.5rem;
+      }
+
+      button:hover {
+        background-color: var(--light-green);
+        transform: translateY(-2px);
+      }
+
+      button:focus {
+        outline: 2px solid var(--light-green);
+        outline-offset: 2px;
+      }
+
+      button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .leave-btn {
+        background-color: var(--error-red);
+      }
+
+      .leave-btn:hover {
+        background-color: #b71c1c;
+      }
+
+      .spinner {
+        display: none;
+        width: 20px;
+        height: 20px;
+        border: 3px solid var(--white);
+        border-top: 3px solid var(--light-green);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      button.loading .spinner {
+        display: block;
+      }
+
+      button.loading span {
+        visibility: hidden;
+      }
+
+      .messages {
+        margin-bottom: 1rem;
+        text-align: center;
+      }
+
+      .messages .error {
+        color: var(--error-red);
+        background: rgba(211, 47, 47, 0.1);
+        padding: 0.5rem;
+        border-radius: 5px;
+      }
+
+      .messages .success {
+        color: var(--green);
+        background: rgba(76, 175, 80, 0.1);
+        padding: 0.5rem;
+        border-radius: 5px;
+      }
+
+      .inline-error {
+        color: var(--error-red);
+        font-size: 0.85rem;
+        margin-top: 0.25rem;
+        display: none;
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+
+      .modal-content {
+        background: var(--white);
+        padding: 2rem;
+        border-radius: 10px;
+        text-align: center;
+        max-width: 400px;
+        width: 90%;
+        box-shadow: 0 4px 15px var(--shadow);
+      }
+
+      .modal-content h2 {
+        color: var(--green);
+        margin-bottom: 1rem;
+      }
+
+      .modal-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 1rem;
+      }
+
+      .modal-buttons button {
+        padding: 0.5rem 1.5rem;
+        margin: 0;
+      }
+
+      .modal-buttons .cancel {
+        background: var(--error-red);
+      }
+
+      .modal-buttons .cancel:hover {
+        background: #b71c1c;
+      }
+
+      .penalty-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 1rem;
+        padding: 0.5rem;
+        background-color: rgb(183, 36, 10);
+        border-radius: 5px;
+      }
+
+      .penalty-text {
+        font-weight: 600;
+        color: #000;
+      }
+
+      .penalty-ticks {
+        display: flex;
+        gap: 5px;
+      }
+
+      .tick-icon {
+        width: 20px;
+        height: 20px;
+        background-size: contain;
+        background-repeat: no-repeat;
+      }
+
+      .tick-icon.filled {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23D32F2F'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z'/%3E%3C/svg%3E");
+      }
+
+      .tick-icon.empty {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%239E9E9E'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z'/%3E%3C/svg%3E");
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes spin {
+        to {
+          transform: translate(-50%, -50%) rotate(360deg);
+        }
+      }
+
+      @media (max-width: 600px) {
+        .container {
+          margin: 1rem;
+          padding: 1rem;
+        }
+
+        .sidebar {
+          width: 100%;
+          right: -100%;
+        }
+
+        .sidebar.active {
+          right: 0;
+        }
+
+        h1 {
+          font-size: 1.5rem;
+        }
+        .navbar-container {
+          display: flex;
+          align-items: center;
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 0 1rem;
+        }
+
+        .diet-btn {
+          background-color: var(--yellow);
+          color: var(--dark-gray);
+          border: none;
+          padding: 0.5rem 1rem;
+          font-size: 0.9rem;
+          font-weight: 600;
+          border-radius: 5px;
+          cursor: pointer;
+          transition: background-color 0.3s, transform 0.1s;
+          margin-right: 1rem;
+        }
+
+        .diet-btn:hover {
+          background-color: #ffb300;
+          transform: translateY(-1px);
+        }
+
+        .diet-btn:focus {
+          outline: 2px solid var(--light-green);
+          outline-offset: 2px;
+        }
+
+        @media (max-width: 600px) {
+          .diet-btn {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+          }
+        }
+        input[type="date"],
+        select,
+        button,
+        input[type="number"] {
+          font-size: 0.9rem;
+          padding: 0.5rem;
+        }
+
+        .food-item {
+          padding: 0.3rem;
+        }
+
+        .summary {
+          font-size: 0.8rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar">
+      <ul>
+        <li><a class="diet-btn" href="default_diet">Diet</a></li>
+        <li><a href="{% url 'home' %}">Home</a></li>
+        <li><a href="{% url 'prebooking' %}">Prebooking</a></li>
+        <li><a href="{% url 'logout' %}">Logout</a></li>
+      </ul>
+    </nav>
+    <div class="main-content">
+      <button type="button" class="toggle-sidebar-btn" id="toggle-sidebar-btn">
+        View Your Plate
+      </button>
+      <div class="container">
+        {% if penalty < 3 %}
+        <div class="penalty-container">
+          <span class="penalty-text">Penalties:</span>
+          <div class="penalty-ticks">
+            <div
+              class="tick-icon {% if penalty >= 1 %}filled{% else %}empty{% endif %}"
+            ></div>
+            <div
+              class="tick-icon {% if penalty >= 2 %}filled{% else %}empty{% endif %}"
+            ></div>
+            <div
+              class="tick-icon {% if penalty >= 3 %}filled{% else %}empty{% endif %}"
+            ></div>
+          </div>
+        </div>
+
+        <h1>
+          <span class="recycle-icon"></span>
+          Prebook Your Meal
+          <span class="recycle-icon"></span>
+        </h1>
+
+        {% if messages %}
+        <div class="messages" aria-live="polite">
+          {% for message in messages %}
+          <div class="{% if message.tags %}{{ message.tags }}{% endif %}">
+            {{ message }}
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <form
+          method="POST"
+          id="prebooking-form"
+          action="{% url 'prebooking' %}"
+        >
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="date">Select Date for Booking</label>
+            <input
+              type="date"
+              id="date"
+              name="date"
+              min="{{ min_date }}"
+              max="{{ max_date }}"
+              required
+            />
+            <div class="inline-error" id="date-error"></div>
+          </div>
+
+          <div class="form-group">
+            <label for="unavailable-date">Select Date for Unavailability</label>
+            <input
+              type="date"
+              id="unavailable-date"
+              name="unavailable_date"
+              min="{{ min_date }}"
+              max="{{ max_date }}"
+            />
+            <div class="inline-error" id="unavailable-date-error"></div>
+          </div>
+          <div class="form-group">
+            <label for="meal_type" class="meal-type-label">
+              Day of the Week: <span id="day-of-week" name="day-of-week"></span>
+            </label>
+          </div>
+          <div class="form-group">
+            <label for="meal_type" class="meal-type-label">
+              Select Meal Type
+              <span class="meal-icon" id="meal-icon"></span>
+            </label>
+            <select id="meal_type" name="meal_type" required>
+              <option value="" disabled selected>Select a meal type</option>
+              <option value="breakfast">Breakfast</option>
+              <option value="lunch">Lunch</option>
+              <option value="dinner">Dinner</option>
+            </select>
+            <div class="inline-error" id="meal-type-error"></div>
+          </div>
+
+          <div class="form-group">
+            <label>Select Food Items and Quantity</label>
+            <div class="food-items" id="food-items-breakfast">
+              {% for item in menu_items.breakfast %}
+              <div class="food-item" data-day="{{ item.day|lower }}">
+                <input
+                  type="checkbox"
+                  name="food_items"
+                  value="{{ item.meal_name }}"
+                  id="breakfast-{{ item.meal_id }}"
+                />
+                <label for="breakfast-{{ item.meal_id }}"
+                  >{{ item.meal_name }}</label
+                >
+                <input
+                  type="number"
+                  name="quantities"
+                  id="quantity-breakfast-{{ item.meal_id }}"
+                  min="1"
+                  max="{{ item.constraints }}"
+                  value="1"
+                  disabled
+                />
+              </div>
+              {% endfor %}
+            </div>
+            <div
+              class="food-items"
+              id="food-items-lunch"
+              data-day="{{ item.day|lower }}"
+            >
+              {% for item in menu_items.lunch %}
+              <div class="food-item">
+                <input
+                  type="checkbox"
+                  name="food_items"
+                  value="{{ item.meal_name }}"
+                  id="lunch-{{ item.meal_id }}"
+                />
+                <label for="lunch-{{ item.meal_id }}"
+                  >{{ item.meal_name }}</label
+                >
+                <input
+                  type="number"
+                  name="quantities"
+                  id="quantity-lunch-{{ item.meal_id }}"
+                  min="1"
+                  max="{{ item.constraints }}"
+                  value="1"
+                  disabled
+                />
+              </div>
+              {% endfor %}
+            </div>
+            <div
+              class="food-items"
+              id="food-items-dinner"
+              data-day="{{ item.day|lower }}"
+            >
+              {% for item in menu_items.dinner %}
+              <div class="food-item" data-day="{{ item.day|lower }}">
+                <input
+                  type="checkbox"
+                  name="food_items"
+                  value="{{ item.meal_name }}"
+                  id="dinner-{{ item.meal_id }}"
+                />
+                <label for="dinner-{{ item.meal_id }}"
+                  >{{ item.meal_name }}</label
+                >
+                <input
+                  type="number"
+                  name="quantities"
+                  id="quantity-dinner-{{ item.meal_id }}"
+                  min="1"
+                  max="{{ item.constraints }}"
+                  value="1"
+                  disabled
+                />
+              </div>
+              {% endfor %}
+            </div>
+            <div class="inline-error" id="food-items-error"></div>
+          </div>
+
+          <div class="summary" id="summary" aria-live="polite">
+            <p>Selected Items: <span id="selected-items">None</span></p>
+            <p>
+              Total: <span class="count" id="selected-count">0</span> item(s)
+            </p>
+          </div>
+
+          <input type="hidden" id="action-input" name="action" value="book" />
+          <div class="form-buttons">
+            <button type="button" id="submit-btn">
+              <span>Book Meal</span>
+              <span class="spinner"></span>
+            </button>
+            <button type="button" id="leave-btn" class="leave-btn">
+              <span>Mark as Unavailable</span>
+              <span class="spinner"></span>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <aside class="sidebar" id="sidebar">
+        <button type="button" class="toggle-sidebar-btn" id="close-sidebar-btn">
+          Close
+        </button>
+        <h2>
+          <span class="plate-icon"></span>
+          Your Plate
+        </h2>
+        <div class="form-group">
+          <label for="sidebar-date">View Bookings for Date</label>
+          <input
+            type="date"
+            id="sidebar-date"
+            name="sidebar-date"
+            min="{{ min_date }}"
+            max="{{ max_date }}"
+          />
+        </div>
+        <ul class="booking-list" id="booking-list">
+          {% if prebooking_meals %}
+          <li class="booking-item">
+            <p><strong>{{ prebooking_meals.meal_type|capfirst }}</strong></p>
+            <p>{{ prebooking_meals.meals }}</p>
+          </li>
+          {% else %}
+          <li class="no-bookings">Select a date to view your bookings</li>
+          {% endif %}
+        </ul>
+        {% comment %}
+        <ul class="booking-list" id="booking-list">
+          <!-- Dynamically populated via JavaScript -->
+          <li class="no-bookings">Select a date to view your bookings</li>
+        </ul>
+        {% endcomment %}
+      </aside>
+
+      <div class="modal" id="confirm-modal">
+        <div class="modal-content">
+          <h2 id="modal-title">Confirm Your Booking</h2>
+          <p id="modal-summary"></p>
+          <div class="modal-buttons">
+            <button class="cancel" id="cancel-btn">Cancel</button>
+            <button id="confirm-btn">Confirm</button>
+          </div>
+        </div>
+      </div>
+      {% else %}
+      <div class="container">
+        <h1>Prebooking Not Allowed</h1>
+        <p>
+          You have reached the maximum number of penalties allowed for
+          prebooking. Please contact the hostel administration for further
+          assistance.
+        </p>
+      </div>
+      {% endif %}
+    </div>
+
+    <script>
+      const form = document.getElementById("prebooking-form");
+      const dateInput = document.getElementById("date");
+      const unavailableDateInput = document.getElementById("unavailable-date");
+      const mealTypeSelect = document.getElementById("meal_type");
+      const mealIcon = document.getElementById("meal-icon");
+      const foodItemsSections = {
+        breakfast: document.getElementById("food-items-breakfast"),
+        lunch: document.getElementById("food-items-lunch"),
+        dinner: document.getElementById("food-items-dinner"),
+      };
+      const allCheckboxes = document.querySelectorAll('input[type="checkbox"]');
+      const allQuantityInputs = document.querySelectorAll(
+        'input[type="number"]'
+      );
+      const selectedItemsSpan = document.getElementById("selected-items");
+      const selectedCountSpan = document.getElementById("selected-count");
+      const submitBtn = document.getElementById("submit-btn");
+      const leaveBtn = document.getElementById("leave-btn");
+      const dateError = document.getElementById("date-error");
+      const unavailableDateError = document.getElementById(
+        "unavailable-date-error"
+      );
+      const mealTypeError = document.getElementById("meal-type-error");
+      const foodItemsError = document.getElementById("food-items-error");
+      const confirmModal = document.getElementById("confirm-modal");
+      const modalTitle = document.getElementById("modal-title");
+      const modalSummary = document.getElementById("modal-summary");
+      const cancelBtn = document.getElementById("cancel-btn");
+      const confirmBtn = document.getElementById("confirm-btn");
+      const sidebarDateInput = document.getElementById("sidebar-date");
+      const bookingList = document.getElementById("booking-list");
+      const toggleSidebarBtn = document.getElementById("toggle-sidebar-btn");
+      const closeSidebarBtn = document.getElementById("close-sidebar-btn");
+      const sidebar = document.getElementById("sidebar");
+
+      // Toggle sidebar visibility
+      toggleSidebarBtn.addEventListener("click", () => {
+        sidebar.classList.add("active");
+      });
+
+      closeSidebarBtn.addEventListener("click", () => {
+        sidebar.classList.remove("active");
+      });
+
+      // Update meal icon and reset food items on meal type change
+      mealTypeSelect.addEventListener("change", function () {
+        const selectedMealType = this.value;
+        mealIcon.className = "meal-icon"; // Reset classes
+        if (selectedMealType) {
+          mealIcon.classList.add(selectedMealType);
+        }
+        mealTypeError.style.display = "none";
+
+        // Hide all food items sections and reset checkboxes/quantities
+        Object.values(foodItemsSections).forEach((section) => {
+          section.classList.remove("active");
+          section
+            .querySelectorAll('input[type="checkbox"]')
+            .forEach((checkbox) => {
+              checkbox.checked = false;
+              checkbox.parentElement.classList.remove("selected");
+            });
+          section.querySelectorAll('input[type="number"]').forEach((input) => {
+            input.disabled = true;
+            input.value = 1;
+          });
+        });
+
+        // Show the selected meal type's food items
+        if (selectedMealType && foodItemsSections[selectedMealType]) {
+          foodItemsSections[selectedMealType].classList.add("active");
+        }
+
+        updateSummary();
+      });
+
+      // Enable/disable quantity input based on checkbox state
+      allCheckboxes.forEach((checkbox) => {
+        checkbox.addEventListener("change", function () {
+          const foodItemDiv = this.parentElement;
+          const quantityInput = this.nextElementSibling.nextElementSibling;
+          foodItemDiv.classList.toggle("selected", this.checked);
+          quantityInput.disabled = !this.checked;
+          if (!this.checked) {
+            quantityInput.value = 1; // Reset quantity when unchecked
+          }
+          updateSummary();
+          foodItemsError.style.display = "none";
+        });
+      });
+
+      // Update summary when quantity changes
+      allQuantityInputs.forEach((input) => {
+        input.addEventListener("change", updateSummary);
+      });
+
+      // Update summary of selected items and quantities
+      function updateSummary() {
+        const selectedItems = Array.from(allCheckboxes)
+          .filter((checkbox) => checkbox.checked)
+          .map((checkbox) => {
+            const name = checkbox.nextElementSibling.textContent;
+            const quantity =
+              checkbox.nextElementSibling.nextElementSibling.value;
+            return `${name} (${quantity})`;
+          });
+        selectedItemsSpan.textContent = selectedItems.length
+          ? selectedItems.join(", ")
+          : "None";
+        const totalCount = Array.from(allCheckboxes)
+          .filter((checkbox) => checkbox.checked)
+          .reduce((sum, checkbox) => {
+            const quantity = parseInt(
+              checkbox.nextElementSibling.nextElementSibling.value
+            );
+            return sum + quantity;
+          }, 0);
+        selectedCountSpan.textContent = totalCount;
+      }
+
+      // Update sidebar bookings based on selected date
+      /* function updateSidebarBookings() {
+          const selectedDate = sidebarDateInput.value;
+          console.log("Selected date:", selectedDate);
+          bookingList.innerHTML = "";
+
+          if (!selectedDate) {
+              bookingList.innerHTML = '<li class="no-bookings">Select a date to view your bookings</li>';
+              return;
+          }
+          else{
+            bookingList.innerHTML = '<p> {{ prebooking_meals }} </p>'
+          }
+          // Handle case when prebooking_meals is None or undefined
+          const bookings = {{ prebooking_meals }} || {};
+          console.log("Bookings data:", bookings);
+
+          let hasBookings = false;
+
+          // Check if bookings exists and has data
+          if (bookings && (bookings.meals || bookings.meal_type)) {
+              hasBookings = true;
+              const li = document.createElement("li");
+              li.className = "booking-item";
+              li.innerHTML = `
+                  <p><strong>${bookings.meal_type ? bookings.meal_type.charAt(0).toUpperCase() + bookings.meal_type.slice(1) : 'Meal'}</strong></p>
+                  <p>${bookings.meals || 'No specific items'}</p>
+              `;
+              bookingList.appendChild(li);
+          }
+
+          if (!hasBookings) {
+              bookingList.innerHTML = '<li class="no-bookings">No bookings for this date</li>';
+          }
+      }*/
+      sidebarDateInput.addEventListener("change", function () {
+        const selectedDate = this.value;
+        if (!selectedDate) {
+          bookingList.innerHTML =
+            '<li class="no-bookings">Select a date to view your bookings</li>';
+          return;
+        }
+
+        // Show loading state
+        bookingList.innerHTML =
+          '<li class="no-bookings">Loading bookings...</li>';
+
+        // Create form data to include CSRF token
+        const formData = new FormData();
+        formData.append("sidebar-date", selectedDate);
+        formData.append("csrfmiddlewaretoken", "{{ csrf_token }}");
+
+        // Fetch bookings for this date from server
+        fetch("{% url 'prebooking' %}", {
+          method: "POST",
+          body: formData,
+          headers: {
+            "X-Requested-With": "XMLHttpRequest",
+          },
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            bookingList.innerHTML = "";
+
+            if (data.status === "success") {
+              // Handle multiple bookings grouped by meal type
+              for (const [mealType, meals] of Object.entries(data.bookings)) {
+                const bookingItem = document.createElement("li");
+                bookingItem.className = "booking-item";
+
+                // Capitalize first letter of meal type
+                const formattedMealType =
+                  mealType.charAt(0).toUpperCase() + mealType.slice(1);
+
+                // Join multiple meals with comma
+                const formattedMeals = meals.join(", ");
+
+                bookingItem.innerHTML = `
+                    <p><strong>${formattedMealType}</strong></p>
+                    <p>${formattedMeals}</p>
+                `;
+                bookingList.appendChild(bookingItem);
+              }
+            } else if (data.status === "empty") {
+              bookingList.innerHTML =
+                '<li class="no-bookings">No bookings found for this date</li>';
+            } else {
+              throw new Error(data.message || "Unknown error");
+            }
+          })
+          .catch((error) => {
+            console.error("Error fetching bookings:", error);
+            bookingList.innerHTML =
+              '<li class="no-bookings">Error loading bookings: ' +
+              error.message +
+              "</li>";
+          });
+      });
+      // Sidebar date change handler
+      /* sidebarDateInput.addEventListener("change", updateSidebarBookings);
+            document
+              .getElementById("submit-btn")
+              .addEventListener("click", function () {
+                document.getElementById("action-input").value = "book";
+                document.getElementById("meal-form").submit();
+              }); */
+
+      document
+        .getElementById("leave-btn")
+        .addEventListener("click", function () {
+          document.getElementById("action-input").value = "leave";
+          document.getElementById("meal-form").submit();
+        });
+      // Form validation and modal display for booking
+      submitBtn.addEventListener("click", function () {
+        let hasError = false;
+
+        // Validate date
+        if (!dateInput.value) {
+          dateError.textContent = "Please select a date.";
+          dateError.style.display = "block";
+          hasError = true;
+        } else {
+          dateError.style.display = "none";
+        }
+
+        // Validate meal type
+        if (!mealTypeSelect.value) {
+          mealTypeError.textContent = "Please select a meal type.";
+          mealTypeError.style.display = "block";
+          hasError = true;
+        } else {
+          mealTypeError.style.display = "none";
+        }
+
+        // Validate food items
+        const selectedItems = Array.from(allCheckboxes).filter(
+          (checkbox) => checkbox.checked
+        );
+        if (selectedItems.length === 0) {
+          foodItemsError.textContent = "Please select at least one food item.";
+          foodItemsError.style.display = "block";
+          hasError = true;
+        } else {
+          foodItemsError.style.display = "none";
+        }
+
+        if (hasError) return;
+
+        // Show confirmation modal for booking
+        const date = dateInput.value;
+        const mealType =
+          mealTypeSelect.options[mealTypeSelect.selectedIndex].text;
+        const items = selectedItems
+          .map((checkbox) => {
+            const name = checkbox.nextElementSibling.textContent;
+            const quantity =
+              checkbox.nextElementSibling.nextElementSibling.value;
+            return `${name} (${quantity})`;
+          })
+          .join(", ");
+        modalTitle.textContent = "Confirm Your Booking";
+        modalSummary.textContent = `You are booking ${mealType} on ${date} with the following items: ${items}. Confirm?`;
+        confirmModal.style.display = "flex";
+        confirmBtn.onclick = () => {
+          confirmModal.style.display = "none";
+          submitBtn.disabled = true;
+          submitBtn.classList.add("loading");
+          form.action = "{% url 'prebooking' %}";
+          // Ensure quantities are submitted
+          selectedItems.forEach((checkbox) => {
+            const quantityInput =
+              checkbox.nextElementSibling.nextElementSibling;
+            quantityInput.disabled = false; // Enable for submission
+          });
+          form.submit();
+          //klkkl
+        };
+      });
+      dateInput.addEventListener("change", function () {
+        if (this.value) {
+          unavailableDateInput.disabled = true;
+          unavailableDateInput.value = ""; // Clear the unavailable date if booking date is selected
+        } else {
+          unavailableDateInput.disabled = false;
+        }
+      });
+
+      unavailableDateInput.addEventListener("change", function () {
+        if (this.value) {
+          dateInput.disabled = true;
+          dateInput.value = ""; // Clear the booking date if unavailable date is selected
+        } else {
+          dateInput.disabled = false;
+        }
+      });
+      // Leave button handler
+      leaveBtn.addEventListener("click", function () {
+        let hasError = false;
+
+        // Validate unavailable date
+        if (!unavailableDateInput.value) {
+          unavailableDateError.textContent =
+            "Please select a date for unavailability.";
+          unavailableDateError.style.display = "block";
+          hasError = true;
+        } else {
+          unavailableDateError.style.display = "none";
+        }
+
+        if (hasError) return;
+
+        // Show confirmation modal for leave
+        const selectedDate = unavailableDateInput.value;
+        modalTitle.textContent = "Confirm Unavailability";
+        modalSummary.textContent = `You are marking yourself as unavailable for all meals on ${selectedDate}. Confirm?`;
+        confirmModal.style.display = "flex";
+        confirmBtn.onclick = () => {
+          confirmModal.style.display = "none";
+          leaveBtn.disabled = true;
+          leaveBtn.classList.add("loading");
+          form.action = "{% url 'prebooking' %}"; // Adjust URL as needed
+          const hiddenInput = document.createElement("input");
+          hiddenInput.type = "hidden";
+          hiddenInput.name = "leave";
+          hiddenInput.value = "true";
+          form.appendChild(hiddenInput);
+          // Add hidden input for date
+          const dateInputHidden = document.createElement("input");
+          dateInputHidden.type = "hidden";
+          dateInputHidden.name = "unavailable_date";
+          dateInputHidden.value = selectedDate;
+          form.appendChild(dateInputHidden);
+          form.submit();
+        };
+      });
+
+      function getDayOfWeek(dateString) {
+        if (!dateString) return "";
+        const days = [
+          "sunday",
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday",
+          "saturday",
+        ];
+        const date = new Date(dateString);
+        return days[date.getDay()]; // Returns lowercase day name
+      }
+
+      /* document.getElementById("date").addEventListener("change", function () {
+              const selectedDate = this.value;
+              const dayOfWeek = getDayOfWeek(selectedDate);
+
+              if (dayOfWeek) {
+                document.getElementById("day-of-week").textContent = dayOfWeek;
+                document.querySelectorAll(".food-item").forEach((el) => {
+                  el.style.display = el.dataset.day === dayOfWeek ? "block" : "none";
+                });
+              }
+            }); */
+      dateInput.addEventListener("change", function () {
+        const selectedDate = this.value;
+        const selectedDay = getDayOfWeek(selectedDate);
+        const dayOfWeekElement = document.getElementById("day-of-week");
+
+        if (selectedDay) {
+          // Capitalize first letter for display
+          dayOfWeekElement.textContent =
+            selectedDay.charAt(0).toUpperCase() + selectedDay.slice(1);
+
+          // Filter food items
+          document.querySelectorAll(".food-item").forEach((item) => {
+            const itemDay = item.dataset.day.toLowerCase();
+            if (itemDay === selectedDay) {
+              item.style.display = "flex"; // Show matching items
+            } else {
+              item.style.display = "none"; // Hide others
+            }
+          });
+
+          console.log("Showing items for:", selectedDay); // Debug log
+        } else {
+          dayOfWeekElement.textContent = "";
+          // Show all items if no date selected
+          document.querySelectorAll(".food-item").forEach((item) => {
+            item.style.display = "flex";
+          });
+        }
+      });
+
+      // Also add this to handle the unavailable date input
+      unavailableDateInput.addEventListener("change", function () {
+        if (this.value) {
+          dateInput.value = ""; // Clear booking date if unavailable date is selected
+          document.getElementById("day-of-week").textContent = getDayOfWeek(
+            this.value
+          );
+        }
+      });
+      // Modal cancel button
+      cancelBtn.addEventListener("click", () => {
+        confirmModal.style.display = "none";
+      });
+
+      // Close modal and sidebar on Escape key
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          if (confirmModal.style.display === "flex") {
+            confirmModal.style.display = "none";
+          }
+          if (sidebar.classList.contains("active")) {
+            sidebar.classList.remove("active");
+          }
+        }
+      });
+
+      // Reset summary on page load
+      updateSummary();
+      updateSidebarBookings();
+    </script>
+  </body>
+</html>

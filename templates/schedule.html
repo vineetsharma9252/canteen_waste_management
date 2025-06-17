@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Garbage Schedule</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        font-family: "Roboto", sans-serif;
+        box-sizing: border-box;
+      }
+
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background-color: rgb(97, 197, 164);
+        padding: 20px;
+        flex-direction: column;
+      }
+
+      h1 {
+        margin-bottom: 20px;
+        color: #fff;
+      }
+
+      .container {
+        max-width: 400px;
+        width: 100%;
+        background-color: rgb(62, 136, 111);
+        border-radius: 15px;
+        padding: 30px;
+        margin-bottom: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .schedule-form {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .schedule-form label {
+        color: #fff;
+        margin-bottom: 5px;
+        font-weight: 500;
+      }
+
+      .schedule-form input,
+      .schedule-form textarea,
+      .schedule-form select {
+        padding: 10px;
+        margin-bottom: 15px;
+        border-radius: 15px;
+        border: none;
+        outline: none;
+        font-size: 14px;
+      }
+
+      .schedule-form input[type="text"],
+      .schedule-form input[type="date"],
+      .schedule-form input[type="time"],
+      .schedule-form select {
+        width: 100%;
+        background-color: rgb(147, 163, 147, 0.5);
+      }
+
+      .schedule-form textarea {
+        height: 80px;
+        background-color: rgb(147, 163, 147, 0.5);
+      }
+
+      .submit-btn {
+        padding: 10px 20px;
+        border-radius: 15px;
+        border: none;
+        background-color: rgb(35, 92, 73);
+        color: #fff;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        width: 100%;
+        text-align: center;
+      }
+
+      .submit-btn:hover {
+        background-color: rgb(27, 72, 58);
+      }
+
+      .backbutton {
+        margin-top: 20px;
+        padding: 10px 20px;
+        border-radius: 100px;
+        border: solid 2px rgba(67, 146, 43, 0.9);
+        background-color: rgba(69, 224, 139, 0.6);
+        font-size: 18px;
+        cursor: pointer;
+        text-align: center;
+        display: inline-block;
+        transition: all 0.3s;
+      }
+
+      .backbutton a {
+        text-decoration: none;
+        color: rgb(60, 77, 34);
+      }
+
+      .backbutton:hover {
+        background-color: rgba(195, 212, 120, 0.9);
+        transform: translateY(-2px);
+        box-shadow: rgba(63, 75, 31, 0.7) 0 4px 15px;
+      }
+
+      .logo {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+      }
+
+      .limg {
+        width: 75px;
+        height: 75px;
+        object-fit: contain;
+        border-radius: 50px;
+      }
+
+      .task-list {
+        margin-top: 20px;
+      }
+
+      .task {
+        background-color: rgb(147, 163, 147, 0.5);
+        padding: 10px;
+        border-radius: 15px;
+        margin-bottom: 10px;
+        color: #fff;
+      }
+
+      @media (max-width: 500px) {
+        body {
+          padding: 10px;
+        }
+
+        .container {
+          max-width: 100%;
+          padding: 20px;
+        }
+
+        .backbutton {
+          width: 150px;
+        }
+      }
+    </style>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <h1>Garbage Collection Schedule</h1>
+    <div class="container">
+      <form class="schedule-form" method="post">
+        {% csrf_token %}
+        <label for="task-name">Task Name</label>
+        <select id="task-name" name="task_name">
+          <option value="Biogas plant">Biogas plant</option>
+          <option value="Sorting and Reusing">Sorting and Reusing</option>
+          <option value="Needy People">Needy People</option>
+        </select>
+
+        <label for="task-date">Task Date</label>
+        <input type="date" id="task-date" name="task_date" />
+
+        <label for="task-time">Task Time</label>
+        <input type="time" id="task-time" name="task_time" />
+
+        <label for="task-details">Task Details</label>
+        <textarea
+          id="task-details"
+          placeholder="Enter task details (e.g., Location)"
+          name="task_details"
+        ></textarea>
+
+        <button type="submit" class="submit-btn">Add Task</button>
+      </form>
+
+      <div class="task-list">
+        <!-- Sample Task Entries -->
+        <div class="task">
+          <strong>Task:</strong> Dump Garbage<br />
+          <strong>Date:</strong> 2024-08-26<br />
+          <strong>Time:</strong> 08:00 AM<br />
+          <strong>Details:</strong> Community bin near Block A
+        </div>
+        <!-- More tasks can be dynamically added here -->
+      </div>
+    </div>
+
+    <button class="backbutton">
+      <a href="/homepage">Back to Home</a>
+    </button>
+
+    <div class="logo">
+      <img
+        class="limg"
+        src="https://th.bing.com/th/id/OIP.FOljZSGrz2EdrIB1F80oGgAAAA?w=233&h=123&c=7&r=0&o=5&dpr=1.3&pid=1.7"
+        alt="Logo"
+      />
+    </div>
+  </body>
+</html>

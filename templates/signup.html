@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EcoSign Up | Waste Management System</title>
+    <style>
+        :root {
+            --primary-green: #2E8B57;
+            --secondary-green: #3CB371;
+            --light-green: #98FB98;
+            --earth-brown: #8B4513;
+            --recycle-blue: #4682B4;
+            --paper-beige: #F5F5DC;
+            --alert-red: #FF6B6B;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f8ff;
+            background-image: url('https://img.freepik.com/free-vector/garbage-collection-background_23-2147760143.jpg?w=1380&t=st=1716500000~exp=1716500600~hmac=...');
+            background-size: cover;
+            background-blend-mode: overlay;
+            background-color: rgba(240, 248, 255, 0.9);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .container {
+            background-color: white;
+            width: 90%;
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(46, 139, 87, 0.2);
+            border: 3px solid var(--primary-green);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 10px;
+            background: linear-gradient(90deg, 
+                var(--primary-green) 0%, 
+                var(--secondary-green) 25%, 
+                var(--recycle-blue) 50%, 
+                var(--earth-brown) 75%, 
+                var(--light-green) 100%);
+        }
+        
+        h1 {
+            color: var(--primary-green);
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-size: 2.2rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        h1::after {
+            content: "♻️";
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        h1::before {
+            content: "♻️";
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        form {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        label {
+            color: var(--earth-brown);
+            font-weight: 600;
+            text-align: right;
+            padding-right: 1rem;
+        }
+        
+        input {
+            padding: 0.8rem;
+            border: 2px solid var(--light-green);
+            border-radius: 8px;
+            background-color: var(--paper-beige);
+            transition: all 0.3s ease;
+        }
+        
+        input:focus {
+            border-color: var(--recycle-blue);
+            background-color: white;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(70, 130, 180, 0.2);
+        }
+        
+        button {
+            grid-column: 2;
+            padding: 0.8rem;
+            background-color: var(--primary-green);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 1rem;
+        }
+        
+        button:hover {
+            background-color: var(--secondary-green);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(46, 139, 87, 0.3);
+        }
+        
+        .messages {
+            grid-column: 1 / -1;
+            list-style: none;
+            padding: 0;
+            margin: 0 0 1rem 0;
+        }
+        
+        .messages li {
+            padding: 0.8rem;
+            margin-bottom: 0.5rem;
+            border-radius: 5px;
+            font-weight: 500;
+        }
+        
+        .error {
+            background-color: #FFEBEE;
+            color: var(--alert-red);
+            border-left: 4px solid var(--alert-red);
+        }
+        
+        .success {
+            background-color: #E8F5E9;
+            color: var(--primary-green);
+            border-left: 4px solid var(--primary-green);
+        }
+        
+        p {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: var(--earth-brown);
+        }
+        
+        a {
+            color: var(--recycle-blue);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 600px) {
+            form {
+                grid-template-columns: 1fr;
+            }
+            
+            label {
+                text-align: left;
+                padding-right: 0;
+            }
+            
+            button {
+                grid-column: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Join Our Eco Community</h1>
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
+            
+            <label for="roll_no">Roll Number:</label>
+            <input type="text" id="roll_no" name="roll_no" required>
+            
+            <label for="year">Year (1-5):</label>
+            <input type="number" id="year" name="year" min="1" max="5" required>
+            
+            <label for="course">Course:</label>
+            <input type="text" id="course" name="course" required>
+            
+            <label for="email_id">Email:</label>
+            <input type="email" id="email_id" name="email_id" required>
+            
+            <label for="hostel">Hostel:</label>
+            <input type="text" id="hostel" name="hostel" required>
+            
+            <label for="room_no">Room Number:</label>
+            <input type="text" id="room_no" name="room_no" required>
+            
+            <label for="contact_no">Contact Number:</label>
+            <input type="tel" id="contact_no" name="contact_no" required>
+            
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            
+            <button type="submit">Sign Up & Recycle ♻️</button>
+        </form>
+        <p>Already have an account? <a href="{% url 'login' %}">Log in</a></p>
+    </div>
+</body>
+</html>

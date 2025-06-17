@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Food Waste Quiz - IIT Guwahati</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        font-family: "Roboto", sans-serif;
+        box-sizing: border-box;
+      }
+
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background-color: rgb(97, 197, 164);
+        padding: 20px;
+        flex-direction: column;
+      }
+
+      h1 {
+        margin-bottom: 20px;
+        color: #fff;
+      }
+
+      .quiz-container {
+        max-width: 600px;
+        width: 100%;
+        background-color: rgb(62, 136, 111);
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .quiz-question {
+        color: #fff;
+        font-weight: 500;
+        margin-bottom: 15px;
+      }
+
+      .quiz-options {
+        list-style-type: none;
+        padding: 0;
+      }
+
+      .quiz-options li {
+        background-color: rgb(147, 163, 147, 0.5);
+        margin-bottom: 10px;
+        padding: 10px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      .quiz-options li:hover {
+        background-color: rgb(35, 92, 73);
+      }
+
+      .quiz-options li.correct {
+        background-color: green;
+        color: #fff;
+      }
+
+      .quiz-options li.wrong {
+        background-color: red;
+        color: #fff;
+      }
+
+      .backbutton {
+        margin-top: 20px;
+        padding: 10px 20px;
+        border-radius: 100px;
+        border: solid 2px rgba(67, 146, 43, 0.9);
+        background-color: rgba(69, 224, 139, 0.6);
+        font-size: 18px;
+        cursor: pointer;
+        text-align: center;
+        display: inline-block;
+        transition: all 0.3s;
+      }
+
+      .backbutton a {
+        text-decoration: none;
+        color: rgb(60, 77, 34);
+      }
+
+      .backbutton:hover {
+        background-color: rgba(195, 212, 120, 0.9);
+        transform: translateY(-2px);
+        box-shadow: rgba(63, 75, 31, 0.7) 0 4px 15px;
+      }
+
+      .logo {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+      }
+
+      .limg {
+        width: 75px;
+        height: 75px;
+        object-fit: contain;
+        border-radius: 50px;
+      }
+    </style>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <h1>Food Waste Quiz</h1>
+    <div class="quiz-container">
+      <div class="quiz-question">
+        What is the average daily food waste at Kapili Hostel, IIT Guwahati?
+      </div>
+      <ul class="quiz-options">
+        <li>45.23 kg</li>
+        <li>64.47 kg</li>
+        <li>82.15 kg</li>
+        <li>100.50 kg</li>
+      </ul>
+    </div>
+
+    <button class="backbutton">
+      <a href="/homepage">Back to Home</a>
+    </button>
+
+    <div class="logo">
+      <img
+        class="limg"
+        src="https://th.bing.com/th/id/OIP.FOljZSGrz2EdrIB1F80oGgAAAA?w=233&h=123&c=7&r=0&o=5&dpr=1.3&pid=1.7"
+        alt="Logo"
+      />
+    </div>
+
+    <script>
+      const correctAnswer = "64.47 kg";
+      const options = document.querySelectorAll(".quiz-options li");
+
+      options.forEach((option) => {
+        option.addEventListener("click", function () {
+          if (this.textContent === correctAnswer) {
+            this.classList.add("correct");
+          } else {
+            this.classList.add("wrong");
+          }
+          options.forEach((opt) => (opt.style.pointerEvents = "none")); // Disable further clicks
+        });
+      });
+    </script>
+  </body>
+</html>

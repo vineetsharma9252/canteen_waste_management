@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Waste Sorting Assistance - Classification Result</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            color: #333;
+            background-color: #e0f2f1; /* Light teal background */
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        /* Heading */
+        h1 {
+            color: #00796b; /* Dark teal */
+            margin-top: 20px;
+            font-size: 2.8em;
+            animation: bounce 1s infinite; /* Bounce animation */
+        }
+
+        /* Result Container */
+        .result-container {
+            display: inline-block;
+            background-color: #ffffff; /* White background for results */
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            margin: 20px auto;
+            border: 2px dashed #00796b; /* Dashed border for a playful look */
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .result-container:hover {
+            transform: scale(1.05); /* Slight zoom effect on hover */
+        }
+
+        /* Classification Result */
+        .result-container p {
+            font-size: 1.5em;
+            margin: 15px 0;
+            color: #004d40; /* Darker teal */
+            font-weight: bold;
+            animation: slideIn 1s ease-out; /* Slide-in animation */
+        }
+
+        /* Confidence Score */
+        .confidence-score {
+            background-color: #004d40;
+            color: #ffffff;
+            font-size: 1.2em;
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 50px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            margin: 10px;
+            animation: glow 1s ease-in-out infinite alternate;
+        }
+
+        /* Handling Tips */
+        .tips {
+            font-size: 1.1em;
+            color: #666;
+            margin-top: 20px;
+            background-color: #f0f0f0;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Image Display */
+        img {
+            max-width: 100%;
+            height: auto;
+            border: 5px solid #00796b; /* Dark teal border */
+            border-radius: 15px;
+            margin-top: 20px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        img:hover {
+            transform: rotate(5deg); /* Slight rotation effect on hover */
+        }
+
+        /* Link */
+        a {
+            color: #00796b; /* Dark teal */
+            font-size: 1.2em;
+            text-decoration: none;
+            background-color: #ffffff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: 2px solid #00796b; /* Matching border */
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        a:hover {
+            background-color: #00796b; /* Dark teal background on hover */
+            color: #ffffff; /* White text on hover */
+            text-decoration: none;
+        }
+
+        /* Animations */
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-30px);
+            }
+            60% {
+                transform: translateY(-15px);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes glow {
+            from {
+                box-shadow: 0 0 10px #00796b, 0 0 20px #00796b, 0 0 30px #004d40;
+            }
+            to {
+                box-shadow: 0 0 20px #004d40, 0 0 30px #00796b, 0 0 40px #004d40;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <h1>Classification Result</h1>
+
+    <!-- Result Container -->
+    <div class="result-container">
+        <p>Predicted Category: <span>{{ prediction }}</span></p>
+
+        <!-- Confidence Score -->
+        <div class="confidence-score">
+            Confidence: {{ confidence_score }}%
+        </div>
+
+        <!-- Display Uploaded Waste Image -->
+        <img src="{{ MEDIA_URL }}{{ image_path }}" alt="Uploaded Waste Image" style="max-width: 300px;">
+
+        <!-- Waste Handling Tips -->
+        <div class="tips">
+            <h3>Handling Tips:</h3>
+            <p>
+                {% if prediction == 'Plastic' %}
+                    Please clean and segregate plastics. Recyclable plastics should be disposed of in the correct bins.
+                {% elif prediction == 'Organic' %}
+                    Organic waste can be composted. Ensure it's placed in a compost-friendly bin.
+                {% elif prediction == 'Electronic' %}
+                    E-waste should be disposed of at dedicated recycling centers.
+                {% elif prediction == 'Metal' %}
+                    Metals are recyclable. Please make sure to dispose of them in the recycling bin after proper cleaning.
+                {% else %}
+                    Dispose of this item in general waste.
+                {% endif %}
+            </p>
+        </div>
+
+    </div>
+
+    <!-- Link to Classify Another Waste Item -->
+    <br>
+    <a href="{% url 'waste_classification_view' %}">Classify another waste item</a>
+
+</body>
+</html>
