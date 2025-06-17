@@ -835,6 +835,8 @@ def mark_unavailable(request):
     return redirect('prebooking')
 import logging
 logger = logging.getLogger(__name__)
+
+
 def default_diet(request):
     try:
         connection = pymysql.connect(**db_config)
@@ -851,17 +853,32 @@ def default_diet(request):
             user_id = user['id']
             logger.debug(f"User ID: {user_id}, Hostel: {hostel_name}")
 
-            # Get menu items for dropdowns
-            cursor.execute("SELECT meal_type, meal_name FROM menu_items WHERE hostel_name = %s", 
-                          (hostel_name,))
+            # Get menu items for dropdowns, grouped by day and meal type
+            cursor.execute("""
+                SELECT day, meal_type, meal_name 
+                FROM menu_items 
+                WHERE hostel_name = %s 
+                ORDER BY day, meal_type
+            """, (hostel_name,))
+            
+            # Structure menu items by day and meal type
             menu_items = {
-                'breakfast': [],
-                'lunch': [],
-                'dinner': []
+                'monday': {'breakfast': [], 'lunch': [], 'dinner': []},
+                'tuesday': {'breakfast': [], 'lunch': [], 'dinner': []},
+                'wednesday': {'breakfast': [], 'lunch': [], 'dinner': []},
+                'thursday': {'breakfast': [], 'lunch': [], 'dinner': []},
+                'friday': {'breakfast': [], 'lunch': [], 'dinner': []},
+                'saturday': {'breakfast': [], 'lunch': [], 'dinner': []},
+                'sunday': {'breakfast': [], 'lunch': [], 'dinner': []},
             }
+            
             for row in cursor.fetchall():
-                if row['meal_type'].lower() in menu_items:
-                    menu_items[row['meal_type'].lower()].append(row)
+                day = row['day'].lower()
+                meal_type = row['meal_type'].lower()
+                if day in menu_items and meal_type in menu_items[day]:
+                    menu_items[day][meal_type].append(row)
+                else:
+                    logger.warning(f"Invalid day: {day} or meal_type: {meal_type} in menu_items")
 
             # Get current default diet
             cursor.execute("""

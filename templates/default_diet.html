@@ -28,45 +28,46 @@
             font-weight: 700;
             text-align: center;
         }
-          .day-card {
-        background-color: #f8fff9;
-        border-color: #bde5c3 !important;
-    }
-    
-    .day-header {
-        font-weight: 600;
-        border-bottom: 2px solid #e6f4ea;
-        padding-bottom: 8px;
-    }
-    
-    .meal-title {
-        color: #2f5d2f;
-        font-weight: 600;
-        margin-bottom: 10px;
-    }
-    
-    .meal-items {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-    }
-    
-    .meal-item {
-        padding: 6px 12px;
-        border-radius: 16px;
-        font-size: 0.9rem;
-        border: 1px solid #e6f4ea;
-    }
-    
-    @media (max-width: 768px) {
         .day-card {
-            padding: 15px;
+            background-color: #f8fff9;
+            border-color: #bde5c3 !important;
         }
-    }
+    
+        .day-header {
+            font-weight: 600;
+            border-bottom: 2px solid #e6f4ea;
+            padding-bottom: 8px;
+        }
+    
+        .meal-title {
+            color: #2f5d2f;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+    
+        .meal-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+    
+        .meal-item {
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 0.9rem;
+            border: 1px solid #e6f4ea;
+            font-weight: 600; /* Make meal names bold */
+        }
+    
+        @media (max-width: 768px) {
+            .day-card {
+                padding: 15px;
+            }
+        }
         .table td ul {
-    margin: 0;
-    padding-left: 20px;
-}
+            margin: 0;
+            padding-left: 20px;
+        }
         .meal-icon::before {
             content: "🥗";
             margin: 0 10px;
@@ -128,6 +129,10 @@
             outline: none;
             border-color: #58c17d;
             box-shadow: 0 0 5px rgba(88, 193, 125, 0.5);
+        }
+
+        select[multiple] option {
+            font-weight: 600; /* Make dropdown options bold */
         }
 
         select[multiple] option:checked {
@@ -270,40 +275,52 @@
                                                     <div class="form-group">
                                                         <label>Breakfast</label>
                                                         <select multiple name="{{ day_name }}_breakfast" class="form-control">
-                                                            {% for item in menu_items.breakfast %}
-                                                            <option value="{{ item.meal_name }}"
-                                                                    {% for selected_meal in day_meals.0|split:"," %}
-                                                                        {% if selected_meal|strip == item.meal_name|strip %}selected{% endif %}
-                                                                    {% endfor %}>
-                                                                {{ item.meal_name }}
-                                                            </option>
-                                                            {% endfor %}
+                                                            {% with breakfast_items=menu_items|get_item:day_name|get_item:'breakfast' %}
+                                                                {% for item in breakfast_items %}
+                                                                <option value="{{ item.meal_name }}"
+                                                                        {% for selected_meal in day_meals.0|split:"," %}
+                                                                            {% if selected_meal|strip == item.meal_name|strip %}selected{% endif %}
+                                                                        {% endfor %}>
+                                                                    {{ item.meal_name }}
+                                                                </option>
+                                                                {% empty %}
+                                                                <option disabled>No items available</option>
+                                                                {% endfor %}
+                                                            {% endwith %}
                                                         </select>
                                                     </div>
                                                     <div class="form-group">
                                                         <label>Lunch</label>
                                                         <select multiple name="{{ day_name }}_lunch" class="form-control">
-                                                            {% for item in menu_items.lunch %}
-                                                            <option value="{{ item.meal_name }}"
-                                                                    {% for selected_meal in day_meals.1|split:"," %}
-                                                                        {% if selected_meal|strip == item.meal_name|strip %}selected{% endif %}
-                                                                    {% endfor %}>
-                                                                {{ item.meal_name }}
-                                                            </option>
-                                                            {% endfor %}
+                                                            {% with lunch_items=menu_items|get_item:day_name|get_item:'lunch' %}
+                                                                {% for item in lunch_items %}
+                                                                <option value="{{ item.meal_name }}"
+                                                                        {% for selected_meal in day_meals.1|split:"," %}
+                                                                            {% if selected_meal|strip == item.meal_name|strip %}selected{% endif %}
+                                                                        {% endfor %}>
+                                                                    {{ item.meal_name }}
+                                                                </option>
+                                                                {% empty %}
+                                                                <option disabled>No items available</option>
+                                                                {% endfor %}
+                                                            {% endwith %}
                                                         </select>
                                                     </div>
                                                     <div class="form-group">
                                                         <label>Dinner</label>
                                                         <select multiple name="{{ day_name }}_dinner" class="form-control">
-                                                            {% for item in menu_items.dinner %}
-                                                            <option value="{{ item.meal_name }}"
-                                                                    {% for selected_meal in day_meals.2|split:"," %}
-                                                                        {% if selected_meal|strip == item.meal_name|strip %}selected{% endif %}
-                                                                    {% endfor %}>
-                                                                {{ item.meal_name }}
-                                                            </option>
-                                                            {% endfor %}
+                                                            {% with dinner_items=menu_items|get_item:day_name|get_item:'dinner' %}
+                                                                {% for item in dinner_items %}
+                                                                <option value="{{ item.meal_name }}"
+                                                                        {% for selected_meal in day_meals.2|split:"," %}
+                                                                            {% if selected_meal|strip == item.meal_name|strip %}selected{% endif %}
+                                                                        {% endfor %}>
+                                                                    {{ item.meal_name }}
+                                                                </option>
+                                                                {% empty %}
+                                                                <option disabled>No items available</option>
+                                                                {% endfor %}
+                                                            {% endwith %}
                                                         </select>
                                                     </div>
                                                 </div>
@@ -323,63 +340,63 @@
                 </div>
             </div>
 
-      <div class="row mt-4">
-    <div class="col-md-8 mx-auto">
-        <div class="card shadow-sm">
-            <div class="card-header bg-info text-white">
-                <h4 class="mb-0">Current Default Diet</h4>
-            </div>
-            <div class="card-body">
-                {% for hostel_name, days in default_diet.items %}
-                    {% for day_name, day_meals in days.items %}
-                    <div class="day-card mb-4 p-3 border rounded">
-                        <h5 class="day-header mb-3 text-success">{{ day_name|title }}</h5>
-                        
-                        <div class="meal-section mb-3">
-                            <h6 class="meal-title">🍳 Breakfast</h6>
-                            <div class="meal-items">
-                                {% if day_meals.0 %}
-                                    {% for meal in day_meals.0|split:"," %}
-                                    <span class="meal-item badge bg-light text-dark me-2 mb-2">{{ meal|strip }}</span>
-                                    {% endfor %}
-                                {% else %}
-                                    <span class="text-muted">Not set</span>
-                                {% endif %}
-                            </div>
+            <div class="row mt-4">
+                <div class="col-md-8 mx-auto">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-info text-white">
+                            <h4 class="mb-0">Current Default Diet</h4>
                         </div>
-                        
-                        <div class="meal-section mb-3">
-                            <h6 class="meal-title">🍲 Lunch</h6>
-                            <div class="meal-items">
-                                {% if day_meals.1 %}
-                                    {% for meal in day_meals.1|split:"," %}
-                                    <span class="meal-item badge bg-light text-dark me-2 mb-2">{{ meal|strip }}</span>
-                                    {% endfor %}
-                                {% else %}
-                                    <span class="text-muted">Not set</span>
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <div class="meal-section">
-                            <h6 class="meal-title">🍛 Dinner</h6>
-                            <div class="meal-items">
-                                {% if day_meals.2 %}
-                                    {% for meal in day_meals.2|split:"," %}
-                                    <span class="meal-item badge bg-light text-dark me-2 mb-2">{{ meal|strip }}</span>
-                                    {% endfor %}
-                                {% else %}
-                                    <span class="text-muted">Not set</span>
-                                {% endif %}
-                            </div>
+                        <div class="card-body">
+                            {% for hostel_name, days in default_diet.items %}
+                                {% for day_name, day_meals in days.items %}
+                                <div class="day-card mb-4 p-3 border rounded">
+                                    <h5 class="day-header mb-3 text-success">{{ day_name|title }}</h5>
+                                    
+                                    <div class="meal-section mb-3">
+                                        <h6 class="meal-title">🍳 Breakfast</h6>
+                                        <div class="meal-items">
+                                            {% if day_meals.0 %}
+                                                {% for meal in day_meals.0|split:"," %}
+                                                <span class="meal-item badge bg-light text-dark me-2 mb-2">{{ meal|strip }}</span>
+                                                {% endfor %}
+                                            {% else %}
+                                                <span class="text-muted">Not set</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="meal-section mb-3">
+                                        <h6 class="meal-title">🍲 Lunch</h6>
+                                        <div class="meal-items">
+                                            {% if day_meals.1 %}
+                                                {% for meal in day_meals.1|split:"," %}
+                                                <span class="meal-item badge bg-light text-dark me-2 mb-2">{{ meal|strip }}</span>
+                                                {% endfor %}
+                                            {% else %}
+                                                <span class="text-muted">Not set</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="meal-section">
+                                        <h6 class="meal-title">🍛 Dinner</h6>
+                                        <div class="meal-items">
+                                            {% if day_meals.2 %}
+                                                {% for meal in day_meals.2|split:"," %}
+                                                <span class="meal-item badge bg-light text-dark me-2 mb-2">{{ meal|strip }}</span>
+                                                {% endfor %}
+                                            {% else %}
+                                                <span class="text-muted">Not set</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            {% endfor %}
                         </div>
                     </div>
-                    {% endfor %}
-                {% endfor %}
+                </div>
             </div>
-        </div>
-    </div>
-</div>
         </div>
         <script>
             document.addEventListener('DOMContentLoaded', function () {
