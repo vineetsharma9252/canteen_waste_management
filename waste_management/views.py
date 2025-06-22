@@ -1,5 +1,6 @@
 from csv import Error
 from multiprocessing import connection
+from re import sub
 from django.shortcuts import HttpResponse, redirect, render
 from django.core.files.storage import FileSystemStorage
 import pandas as pd
@@ -23,6 +24,10 @@ from datetime import datetime, timedelta
 from django.http import JsonResponse
 from datetime import date
 import hashlib
+import subprocess
+
+
+subprocess.Popen(["python","-m","streamlit", "run", os.path.join(settings.BASE_DIR,"dash.py") , "--server.headless", "true"])
 
 # Suppress warnings
 warnings.filterwarnings('ignore')
@@ -30,7 +35,7 @@ warnings.filterwarnings('ignore')
 # Load the trained model for waste classification
 model = load_model(settings.MODEL_DIR)
 categories = ['cardboard', 'compost', 'glass', 'metal', 'paper', 'plastic', 'trash']
-print("Model shape" , model.input_shape)
+
 # Database configuration
 db_config = {
     'host': settings.DB_CONFIG['host'],
@@ -41,9 +46,6 @@ db_config = {
     'cursorclass': pymysql.cursors.DictCursor
 }
 
-db_config_2 = settings.DB_CONFIG
-
-print(db_config_2)
 
 def mess_login(request):
     if request.method == "POST":

@@ -2,9 +2,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Hostel Food Waste Management</title>
+    <title>CWM</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="icon"
+      href="https://img.freepik.com/premium-vector/waste-management-vector-logo-design_410429-5960.jpg"
+      type="image/x-icon"
+    />
+
     <style>
       :root {
         --primary: #2e7d32;
@@ -970,7 +976,9 @@
           class="enhanced-solution-image"
         />
         <h3 class="solution-title">Sorting and Reusing Food Waste</h3>
-        <strong>Adopting alternative cooking techniques to minimize waste:</strong>
+        <strong
+          >Adopting alternative cooking techniques to minimize waste:</strong
+        >
         <p>
           Adopting alternative cooking techniques to reduce food waste .
           Techniques such as blanching preserve color and flavor , while
@@ -1174,7 +1182,6 @@
           testimonial.classList.remove("active")
         );
         dots.forEach((dot) => dot.classList.remove("active"));
-
         testimonials[index].classList.add("active");
         dots[index].classList.add("active");
         currentTestimonial = index;
@@ -1234,7 +1241,9 @@
       };
 
       document
-        .querySelectorAll(".stat-card, .section-title, .solution-tabs, .enhanced-solution-card")
+        .querySelectorAll(
+          ".stat-card, .section-title, .solution-tabs, .enhanced-solution-card"
+        )
         .forEach((el) => {
           el.style.opacity = "0";
           el.style.transform = "translateY(20px)";
