@@ -28,7 +28,7 @@ import hashlib
 warnings.filterwarnings('ignore')
 
 # Load the trained model for waste classification
-model = load_model('C:/Users/maste/Downloads/waste_management_system/waste_model_3.h5')
+model = load_model(settings.MODEL_DIR)
 categories = ['cardboard', 'compost', 'glass', 'metal', 'paper', 'plastic', 'trash']
 print("Model shape" , model.input_shape)
 # Database configuration

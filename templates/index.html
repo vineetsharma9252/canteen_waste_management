@@ -38,7 +38,7 @@
         width: 60px;
         height: 40px;
         border: none;
-        background-color: rgb(140, 255, 234, 0.3);
+        background-color: rgba(140, 255, 234, 0.3);
         border-radius: 40px;
         cursor: pointer;
         margin-bottom: 5px;
@@ -103,7 +103,7 @@
         right: 5px;
         border-radius: 25px;
         height: 60px;
-        background-color: rgb(45, 170, 128, 1);
+        background-color: rgba(45, 170, 128, 1);
         border: solid rgb(80, 158, 146) 2px;
         align-items: center;
         z-index: 1000;
@@ -153,7 +153,7 @@
         width: 80px;
         height: 30px;
         border: none;
-        background-color: rgb(117, 240, 199, 0.3);
+        background-color: rgba(117, 240, 199, 0.3);
         border-radius: 15px;
         cursor: pointer;
         margin-bottom: 5px;
@@ -400,6 +400,53 @@
         margin-bottom: 20px;
       }
 
+      /* New container for side-by-side blocks */
+      .enhanced-solutions-container {
+        padding: 80px 20px;
+        background-color: var(--card-bg);
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap;
+        gap: 30px;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .enhanced-solution-card {
+        background-color: var(--card-bg);
+        border-radius: 20px;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        padding: 40px;
+        width: 350px;
+        text-align: center;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .enhanced-solution-card:hover {
+        transform: translateY(-15px);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+      }
+
+      .enhanced-solution-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 6px;
+        background-color: var(--primary);
+      }
+
+      .enhanced-solution-image {
+        width: 100%;
+        height: 400px;
+        object-fit: cover;
+        border-radius: 15px;
+        margin-bottom: 20px;
+      }
+
       .testimonials-section {
         padding: 80px 20px;
         background-color: var(--card-bg);
@@ -598,6 +645,11 @@
         .tab-content {
           padding: 20px;
         }
+
+        .enhanced-solution-card {
+          width: 100%;
+          margin-bottom: 20px;
+        }
       }
     </style>
     <link
@@ -712,13 +764,6 @@
         <button class="tab-button" data-tab="weighing">Self-Weighing</button>
         <button class="tab-button" data-tab="portion">Portion Control</button>
         <button class="tab-button" data-tab="menu">Menu Optimization</button>
-        <button class="tab-button" data-tab="biodegradable">
-          Biodegradable & Biogas
-        </button>
-        <button class="tab-button" data-tab="sorting">Sorting & Reusing</button>
-        <button class="tab-button" data-tab="community">
-          Community Engagement
-        </button>
       </div>
 
       <div id="prebooking" class="tab-content active">
@@ -885,12 +930,15 @@
           <li>Student preference analysis</li>
         </ul>
       </div>
+    </section>
 
-      <div id="biodegradable" class="tab-content">
+    <!-- Enhanced Solutions Section -->
+    <section class="enhanced-solutions-container">
+      <div class="enhanced-solution-card">
         <img
           src="https://tse3.mm.bing.net/th/id/OIP.rX4wcyCP8J-2b-Ad7HPxSAHaHa?r=0&rs=1&pid=ImgDetMain&cb=idpwebpc1"
           alt="Biodegradable and Biogas"
-          class="solution-image"
+          class="enhanced-solution-image"
         />
         <h3 class="solution-title">Biodegradable and Biogas Solutions</h3>
         <strong>Converting food waste into valuable resources:</strong>
@@ -915,16 +963,14 @@
         </ul>
       </div>
 
-      <div id="sorting" class="tab-content">
+      <div class="enhanced-solution-card">
         <img
           src="https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
           alt="Sorting and Reusing"
-          class="solution-image"
+          class="enhanced-solution-image"
         />
         <h3 class="solution-title">Sorting and Reusing Food Waste</h3>
-        <strong
-          >Adopting alternative cooking techniques to minimize waste:</strong
-        >
+        <strong>Adopting alternative cooking techniques to minimize waste:</strong>
         <p>
           Adopting alternative cooking techniques to reduce food waste .
           Techniques such as blanching preserve color and flavor , while
@@ -943,11 +989,11 @@
         </ul>
       </div>
 
-      <div id="community" class="tab-content">
+      <div class="enhanced-solution-card">
         <img
           src="https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
           alt="Community Engagement"
-          class="solution-image"
+          class="enhanced-solution-image"
         />
         <h3 class="solution-title">Community Engagement</h3>
         <p>Utilizing leftover food responsibly and supporting the community:</p>
@@ -1173,7 +1219,7 @@
       // Animation on scroll
       const animateOnScroll = () => {
         const elements = document.querySelectorAll(
-          ".stat-card, .section-title, .solution-tabs"
+          ".stat-card, .section-title, .solution-tabs, .enhanced-solution-card"
         );
 
         elements.forEach((element) => {
@@ -1188,7 +1234,7 @@
       };
 
       document
-        .querySelectorAll(".stat-card, .section-title, .solution-tabs")
+        .querySelectorAll(".stat-card, .section-title, .solution-tabs, .enhanced-solution-card")
         .forEach((el) => {
           el.style.opacity = "0";
           el.style.transform = "translateY(20px)";

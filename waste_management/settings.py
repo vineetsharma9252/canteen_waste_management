@@ -123,7 +123,7 @@ DATABASES = {
     }
 }
 
-
+MODEL_DIR = os.path.join(BASE_DIR, 'waste_model_3.h5')
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
