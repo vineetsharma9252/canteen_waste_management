@@ -48,11 +48,19 @@ SECRET_KEY = 'django-insecure-xk!9j=0e!xdp&od=3vtt78dyzi1uhw4ol-hstchjh3r5#z!$b(
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
-
+from dotenv import load_dotenv
 ALLOWED_HOSTS = ['*']
 
-
+import os
+import pymysql
+load_dotenv()  # Auto-parses JSON
 # Application definition
+DB_CONFIG = {
+    'host': os.getenv('HOST'),
+    'user': os.getenv('USER'),
+    'password': os.getenv('PASSWORD'),
+    'database': os.getenv('DATABASE'),
+}
 
 INSTALLED_APPS = [
     'django.contrib.admin',

@@ -9,8 +9,6 @@ import plotly.figure_factory as ff
 import pymysql
 import warnings
 import plotly.express as px
-from transformers import GPT2LMHeadModel, GPT2Tokenizer
-from transformers import AutoTokenizer, AutoModelForCausalLM
 import time
 from django.views.decorators.csrf import csrf_protect
 from django.contrib import messages
@@ -25,6 +23,7 @@ from datetime import datetime, timedelta
 from django.http import JsonResponse
 from datetime import date
 import hashlib
+
 # Suppress warnings
 warnings.filterwarnings('ignore')
 
@@ -34,13 +33,17 @@ categories = ['cardboard', 'compost', 'glass', 'metal', 'paper', 'plastic', 'tra
 print("Model shape" , model.input_shape)
 # Database configuration
 db_config = {
-    'host': 'localhost',
-    'user': 'root',
-    'password': 'supersaiyan1000',
-    'database': 'prebooking',
+    'host': settings.DB_CONFIG['host'],
+    'user': settings.DB_CONFIG['user'],
+    'password': settings.DB_CONFIG['password'],
+    'database': settings.DB_CONFIG['database'],
     'charset': 'utf8mb4',
     'cursorclass': pymysql.cursors.DictCursor
 }
+
+db_config_2 = settings.DB_CONFIG
+
+print(db_config_2)
 
 def mess_login(request):
     if request.method == "POST":
@@ -63,67 +66,142 @@ def mess_login(request):
     return render(request, "mess_login.html")
 
 
+from datetime import datetime, timedelta
+
+
+from datetime import datetime, timedelta
+import pymysql
+
 def mess_interface(request):
-    today = datetime.now().date()
-    next_days = [(today + timedelta(days=i)).strftime("%Y-%m-%d") for i in range(4)]
+    today = datetime.now().date()  # June 22, 2025
+    current_time = datetime.now()  # 08:21 AM IST on June 22, 2025
+    date = today.strftime("%Y-%m-%d")
+    day_name = datetime.strptime(date, "%Y-%m-%d").strftime("%A")  # Sunday
     bookings = []
+    meals_to_prepare = []  
+    item_quantities = {}  
+    immediate_meal = None
     connection = pymysql.connect(**db_config)
+
+    print("Current time is: ", current_time)  # Debug
+    print("Today's date is: ", today)  # Debug
+    print("Date is: ", date)  # Debug
     try:
         with connection.cursor() as cursor:
-            # Fetch all users
-            cursor.execute("select hostel from mess_workers where mess_worker_name = %s",(request.session.get("mess_worker_name")))
+            # Fetch mess worker's hostel
+            cursor.execute("SELECT hostel FROM mess_workers WHERE mess_worker_name = %s", (request.session.get("mess_worker_name"),))
             hostel = cursor.fetchone()["hostel"]
-            print("Hostel are : ",hostel)
-            cursor.execute("SELECT * FROM users where hostel=%s ",(hostel))
+            print("Hostel are: ", hostel)
+
+            # Fetch all users
+            cursor.execute("SELECT * FROM users WHERE hostel = %s", (hostel,))
             users = cursor.fetchall()
-            for date in next_days:
-                day_name = datetime.strptime(date, "%Y-%m-%d").strftime("%A")
 
-                for user in users:
-                    user_id = user["id"]
-                    # Get prebooking if available
-                    cursor.execute("""
-                        SELECT * FROM prebookings
-                        WHERE id=%s AND date=%s AND on_leave=0 AND hostel=%s
-                    """, (user_id, date,hostel))
+            # Define meal times and cutoffs
+            meal_times = {
+                "breakfast": datetime.combine(today, datetime.strptime("07:00", "%H:%M").time()),
+                "lunch": datetime.combine(today, datetime.strptime("12:00", "%H:%M").time()),
+                "dinner": datetime.combine(today, datetime.strptime("19:00", "%H:%M").time())
+            }
+            cutoffs = {meal: time - timedelta(hours=2) for meal, time in meal_times.items()}
+            print(f"Meal times: {meal_times}, Cutoffs: {cutoffs}, Current time: {current_time}")  # Debug
 
-                    prebookings = cursor.fetchall()
+            # Determine immediate meal based on current time
+            if current_time >= cutoffs["breakfast"] and current_time < cutoffs["lunch"]:
+                immediate_meal = "lunch"
+            elif current_time >= cutoffs["lunch"] and current_time < cutoffs["dinner"]:
+                immediate_meal = "dinner"
+            elif current_time >= cutoffs["dinner"]:
+                immediate_meal = None  # No immediate meal after dinner cutoff
+            print(f"Immediate meal: {immediate_meal}")  # Debug
 
-                    if prebookings:
+            # Fetch bookings and apply 2-hour cutoff, aggregate item quantities for immediate meal
+            for user in users:
+                user_id = user["id"]
+                cursor.execute("""
+                    SELECT * FROM prebookings
+                    WHERE id = %s AND date = %s AND hostel = %s
+                """, (user_id, date, hostel))
+                prebookings = cursor.fetchall()
+                print(f"Prebookings for user {user_id}: {prebookings}")  # Debug
+                for meal_type in ["breakfast", "lunch", "dinner"]:
+                    cutoff_time = cutoffs[meal_type]
+                    if current_time < cutoff_time:
+                        continue  # Skip if before cutoff
+                    if meal_type != immediate_meal:
+                        continue  # Only process the immediate meal
+
+                    # Check if prebooking exists for this meal type
+                    prebooking_exists = any(pb["meal_type"] == meal_type and pb["on_leave"] == 0 for pb in prebookings)
+                    if prebooking_exists:
+                        # Use prebooking data
                         for pb in prebookings:
-                            bookings.append({
-                                "name": user["name"],
-                                "roll_no": user["roll_no"],
-                                "meal_type": pb["meal_type"],
-                                "items": pb["meals"],
-                                "quantity": pb["quantity"],
-                                "date": pb["date"],
-                                "source": "Prebooking"
-                            })
+                            if pb["meal_type"] == meal_type and pb["on_leave"] == 0:
+                                bookings.append({
+                                    "id": user_id,
+                                    "name": user["name"],
+                                    "roll_no": user["roll_no"],
+                                    "meal_type": pb["meal_type"],
+                                    "items": pb["meals"],
+                                    "quantity": pb["quantity"] or 1,
+                                    "date": pb["date"],
+                                    "source": "Prebooking"
+                                })
+                                meals_to_prepare.append({
+                                    "meal_type": pb["meal_type"],
+                                    "items": pb["meals"],
+                                    "quantity": pb["quantity"] or 1
+                                })
+                                for item in pb["meals"].split(","):
+                                    item = item.strip()
+                                    item_quantities[item] = item_quantities.get(item, 0) + (pb["quantity"] or 1)
                     else:
-                        # No prebooking; get default diet
+                        # No prebooking and not on leave, use default food
                         cursor.execute("""
                             SELECT * FROM default_food
-                            WHERE id=%s AND day=%s AND hostel_id=%s
-                        """, (user_id, day_name, user["hostel"]))
-
+                            WHERE id = %s AND day = %s AND hostel_id = %s AND meal_type = %s
+                        """, (user_id, day_name, hostel, meal_type))
                         defaults = cursor.fetchall()
+                        if defaults:
+                            for df in defaults:
+                                bookings.append({
+                                    "id": user_id,
+                                    "name": user["name"],
+                                    "roll_no": user["roll_no"],
+                                    "meal_type": df["meal_type"],
+                                    "items": df["items"],
+                                    "quantity": df["quantity"] or 1,
+                                    "date": date,
+                                    "source": "Default Diet"
+                                })
+                                meals_to_prepare.append({
+                                    "meal_type": df["meal_type"],
+                                    "items": df["items"],
+                                    "quantity": df["quantity"] or 1
+                                })
+                                for item in df["items"].split(","):
+                                    item = item.strip()
+                                    item_quantities[item] = item_quantities.get(item, 0) + (df["quantity"] or 1)
 
-                        for df in defaults:
-                            bookings.append({
-                                "name": user["name"],
-                                "roll_no": user["roll_no"],
-                                "meal_type": df["meal_type"],
-                                "items": df["items"],
-                                "quantity": df["quantity"],
-                                "date": date,
-                                "source": "Default Diet"
-                            })
+            # Calculate totals only for the immediate meal
+            total_meals = 0
+            print("Immediate meal is: ", immediate_meal)  # Debug
+            if immediate_meal:
+                total_meals = sum(b["quantity"] for b in bookings if b["meal_type"] == immediate_meal)
+            print(f"Total meals for {immediate_meal}: {total_meals}")  # Debug
 
     finally:
         connection.close()
 
-    return render(request, "mess_interface.html", {"bookings": bookings})
+    return render(request, "mess_interface.html", {
+        "bookings": bookings,
+        "total_meals": total_meals if immediate_meal else 0,
+        "immediate_meal": immediate_meal,
+        "cutoffs": cutoffs,
+        "meal_times": meal_times,
+        "meals_to_prepare": meals_to_prepare,
+        "item_quantities": item_quantities
+    })
     
 
 def signup(request):
@@ -428,7 +506,7 @@ def sanitation_report(request):
                         image_url = request.build_absolute_uri(fs.url(os.path.join('complaints', filename)))
                         print("Image url is :",image_url)
                         print("date is ",date.today())
-                    print("Yeah it is working.....")
+                    # print("Yeah it is working.....")
                     try:
                         with connection.cursor() as cursor:
                             cursor.execute("select hostel from users where roll_no = %s",(request.session.get("roll_no")))
@@ -492,12 +570,12 @@ def prebooking(request):
                     if row['meal_type'] in meal_times and not meal_times[row['meal_type']]:
                         meal_times[row['meal_type']] = row['time']  # Store first time for each meal_type
 
-            print("Menu items ",menu_items)
+            # print("Menu items ",menu_items)
             # Fetch penalty count
             cursor.execute("SELECT COUNT(*) as penalty_count FROM has_arrived WHERE has_arrived = 0 AND id = %s", (user_id,))
             num_penalties = cursor.fetchone()['penalty_count']
             print(f"Penalty count: {num_penalties}")  # Debug
-            print("Sidebar date:", request.POST.get("sidebar-date"))  # Debug
+            # print("Sidebar date:", request.POST.get("sidebar-date"))  # Debug
             # Fetch prebooking meals for sidebar
             sidebar_date = request.POST.get("sidebar-date")
             if sidebar_date:
@@ -540,10 +618,10 @@ def prebooking(request):
                 # request.session['prebooking_meals'] = prebooking_meals
     except pymysql.Error as e:
         messages.error(request, f"Database error: {str(e)}")
-        print("Something went wrong ")
+        # print("Something went wrong ")
         return render(request, 'prebooking.html', {
             'menu_items': menu_items,
-            'min_date': (timezone.now().date() + timedelta(days=1)).strftime('%Y-%m-%d'),
+            'min_date': (timezone.now().date()).strftime('%Y-%m-%d'),
             'max_date': (timezone.now().date() + timedelta(days=3)).strftime('%Y-%m-%d'),
             'penalty': num_penalties,
             'prebooking_meals': prebooking_meals,
@@ -552,7 +630,7 @@ def prebooking(request):
         if 'connection' in locals():
             connection.close()
     # prebooking_meals = request.session.get("prebooking_meals")
-    print("Prebooking meals outside the function : ", prebooking_meals)
+    # print("Prebooking meals outside the function : ", prebooking_meals)
     if request.method == 'POST':
         action = request.POST.get('action')  # Changed from 'leave' to 'action' to match HTML
         print(f"Request method: {request.method}, Action: {action}, POST data: {request.POST}")  # Debug
@@ -563,7 +641,7 @@ def prebooking(request):
                 messages.error(request, "Please select a date for unavailability.")
                 return render(request, 'prebooking.html', {
                     'menu_items': menu_items,
-                    'min_date': (timezone.now().date() + timedelta(days=1)).strftime('%Y-%m-%d'),
+                    'min_date': (timezone.now().date()).strftime('%Y-%m-%d'),
                     'max_date': (timezone.now().date() + timedelta(days=3)).strftime('%Y-%m-%d'),
                     'penalty': num_penalties,
                     'prebooking_meals': prebooking_meals,
@@ -572,7 +650,7 @@ def prebooking(request):
             try:
                 booking_date = datetime.strptime(unavailable_date, '%Y-%m-%d').date()
                 today = timezone.now().date()
-                min_date = today + timedelta(days=1)
+                min_date = today 
                 max_date = today + timedelta(days=3)
 
                 if not (min_date <= booking_date <= max_date):
@@ -588,14 +666,15 @@ def prebooking(request):
                 messages.error(request, "Invalid date format.")
                 return render(request, 'prebooking.html', {
                     'menu_items': menu_items,
-                    'min_date': (timezone.now().date() + timedelta(days=1)).strftime('%Y-%m-%d'),
+                    'min_date': (timezone.now().date()).strftime('%Y-%m-%d'),
                     'max_date': (timezone.now().date() + timedelta(days=3)).strftime('%Y-%m-%d'),
                     'penalty': num_penalties,
                     'prebooking_meals': prebooking_meals,
                 })
-            print("booking_date:", booking_date)  # Debug
-            print("meal_times:", meal_times)  # Debug
-            print("today:", today)  # Debug
+            # print("booking_date:", booking_date)  # Debug
+            # print("meal_times:", meal_times)  # Debug
+            # print("today:", today)  # Debug
+            print("booking date is : ",booking_date)
             if booking_date == today:
                 current_time = timezone.now().time()
                 cutoff_time = meal_times.get(meal_type)
@@ -617,7 +696,7 @@ def prebooking(request):
                                 'prebooking_meals': prebooking_meals,
                             })
                     except ValueError as e:
-                        print(f"Time parsing error: {str(e)}")  # Debug
+                        # print(f"Time parsing error: {str(e)}")  # Debug
                         messages.error(request, f"Invalid time format for {meal_type} cutoff time.")
                         return render(request, 'prebooking.html', {
                             'menu_items': menu_items,
@@ -639,7 +718,7 @@ def prebooking(request):
                     cursor.execute(
                         """
                         INSERT INTO prebookings (id, fine, penalty, date, meal_type, meals, quantity, on_leave,hostel)
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s,%s)
                         """,
                         (user['id'], 0, num_penalties, unavailable_date, None, None, 0, 1,hostel_name)
                     )
@@ -662,7 +741,7 @@ def prebooking(request):
                 messages.error(request, "Please fill all required fields.")
                 return render(request, 'prebooking.html', {
                     'menu_items': menu_items,
-                    'min_date': (timezone.now().date() + timedelta(days=1)).strftime('%Y-%m-%d'),
+                    'min_date': (timezone.now().date()).strftime('%Y-%m-%d'),
                     'max_date': (timezone.now().date() + timedelta(days=3)).strftime('%Y-%m-%d'),
                     'penalty': num_penalties,
                     'prebooking_meals': prebooking_meals,
@@ -671,7 +750,7 @@ def prebooking(request):
             try:
                 booking_date = datetime.strptime(date_str, '%Y-%m-%d').date()
                 today = timezone.now().date()
-                min_date = today + timedelta(days=1)
+                min_date = today
                 max_date = today + timedelta(days=3)
 
                 if not (min_date <= booking_date <= max_date):
@@ -687,7 +766,7 @@ def prebooking(request):
                 messages.error(request, "Invalid date format.")
                 return render(request, 'prebooking.html', {
                     'menu_items': menu_items,
-                    'min_date': (timezone.now().date() + timedelta(days=1)).strftime('%Y-%m-%d'),
+                    'min_date': (timezone.now().date()).strftime('%Y-%m-%d'),
                     'max_date': (timezone.now().date() + timedelta(days=3)).strftime('%Y-%m-%d'),
                     'penalty': num_penalties,
                     'prebooking_meals': prebooking_meals,
@@ -697,24 +776,40 @@ def prebooking(request):
                 messages.error(request, "Invalid meal type.")
                 return render(request, 'prebooking.html', {
                     'menu_items': menu_items,
-                    'min_date': (timezone.now().date() + timedelta(days=1)).strftime('%Y-%m-%d'),
+                    'min_date': (timezone.now().date()).strftime('%Y-%m-%d'),
                     'max_date': (timezone.now().date() + timedelta(days=3)).strftime('%Y-%m-%d'),
                     'penalty': num_penalties,
                     'prebooking_meals': prebooking_meals,
                 })
-            print(f"Booking date: {booking_date}, Meal type: {meal_type}, Food items: {food_items}, Quantities: {quantities}")  # Debug
+            # print(f"Booking date: {booking_date}, Meal type: {meal_type}, Food items: {food_items}, Quantities: {quantities}")  # Debug
             # Time restriction for tomorrow's bookings
+            today = timezone.now().date()
+            min_date = today
+            import re
+            print("booking date is : ",booking_date)
+            print("Min date is : ",min_date)
             if booking_date == min_date:  # Booking for tomorrow
                 current_time = timezone.now().time()
                 cutoff_time = meal_times.get(meal_type)
+                print("yeah it is working till now , cutoff time is ",cutoff_time , " ",type(cutoff_time))
                 if cutoff_time:
                     try:
-                        cutoff_hour, cutoff_minute, cutoff_second = map(int, cutoff_time.split(':'))
-                        cutoff_time_obj = datetime.strptime(cutoff_time, '%H:%M:%S').time()
+                        first_time_match = re.search(r'\d{1,2}:\d{2}\s*(?:AM|PM)', cutoff_time)
+                        if not first_time_match:
+                            raise ValueError("No valid start time found in cutoff_time range")
+
+                        print("first_time match is ",first_time_match)
+                        first_time_str = first_time_match.group(0) 
+                        
+                        cutoff_time_obj = datetime.strptime(first_time_str, '%I:%M %p').time() 
+                        
+                        print("cut off time ",cutoff_time_obj)
+                        print("cutoff time object is ",cutoff_time_obj)
+                        print("Current Time is ",current_time)
                         if current_time > cutoff_time_obj:
                             messages.error(
                                 request,
-                                f"Cannot book {meal_type} for tomorrow after {cutoff_time_obj.strftime('%I:%M %p')}."
+                                f"Cannot book {meal_type} for today after {cutoff_time_obj.strftime('%I:%M %p')}."
                             )
                             return render(request, 'prebooking.html', {
                                 'menu_items': menu_items,
@@ -747,7 +842,7 @@ def prebooking(request):
                         messages.error(request, "You have reached the maximum number of penalties. Prebooking is not allowed.")
                         return render(request, 'prebooking.html', {
                             'menu_items': menu_items,
-                            'min_date': (timezone.now().date() + timedelta(days=1)).strftime('%Y-%m-%d'),
+                            'min_date': (timezone.now().date()).strftime('%Y-%m-%d'),
                             'max_date': (timezone.now().date() + timedelta(days=3)).strftime('%Y-%m-%d'),
                             'penalty': num_penalties,
                             'prebooking_meals': prebooking_meals,
@@ -774,7 +869,7 @@ def prebooking(request):
 
     return render(request, 'prebooking.html', {
         'menu_items': menu_items,
-        'min_date': (timezone.now().date() + timedelta(days=1)).strftime('%Y-%m-%d'),
+        'min_date': (timezone.now().date()).strftime('%Y-%m-%d'),
         'max_date': (timezone.now().date() + timedelta(days=3)).strftime('%Y-%m-%d'),
         'penalty': num_penalties,
         'prebooking_meals': prebooking_meals,
@@ -808,20 +903,22 @@ def mark_unavailable(request):
                 if not user:
                     messages.error(request, "User not found.")
                     return redirect('login')
-
+                print("It is working till Now..")
                 cursor.execute("SELECT COUNT(*) as penalty_count FROM has_arrived WHERE has_arrived = 0 AND id = %s", (user['id'],))
                 num_penalties = cursor.fetchone()['penalty_count']
 
                 if num_penalties >= 3:
                     messages.error(request, "You have reached the maximum number of penalties. Prebooking is not allowed.")
                     return redirect('prebooking')
-
+                cursor.execute("select hostel from users where roll_no =%s",(request.session.get("roll_no")))
+                hostel = cursor.fetchone()['hostel']
+                print("Hostel is ",hostel)
                 cursor.execute(
                     """
-                    INSERT INTO prebookings (id, fine, penalty, date, meal_type, meals, quantity, on_leave)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                    INSERT INTO prebookings (id, fine, penalty, date, meal_type, meals, quantity, on_leave,hostel)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s,%s)
                     """,
-                    (user['id'], 0, num_penalties, unavailable_date, None, None, 0, 1)
+                    (user['id'], 0, num_penalties, unavailable_date, None, None, 0, 1,hostel)
                 )
                 connection.commit()
                 messages.success(request, f"You are marked as unavailable for {unavailable_date}.")

@@ -9,8 +9,6 @@ st.set_page_config(page_title='Waste Management Dashboard', page_icon=":recycle:
 st.title(":recycle: Waste Management Dashboard")
 st.markdown("<style>div.block-container{padding-top:2rem;}</style>", unsafe_allow_html=True)
 
-
-# @st.cache
 def load_data():
     return pd.read_csv('indian_state_geodata_waste.csv')
 
@@ -30,19 +28,18 @@ df = df[(df['Date'] >= pd.to_datetime(date1)) & (df['Date'] <= pd.to_datetime(da
 
 st.sidebar.header("Filters")
 state = st.sidebar.multiselect("Select State", df["State"].unique(), default=df["State"].unique())
-waste_type = st.sidebar.multiselect("Select Waste Type", df["Waste_Type"].unique(), default=df["Waste_Type"].unique())
+meal_type = st.sidebar.multiselect("Select Meal Type", ["Breakfast", "Lunch", "Dinner"], default=["Breakfast", "Lunch", "Dinner"])
 
-filtered_df = df[df["State"].isin(state) & df["Waste_Type"].isin(waste_type)]
+filtered_df = df[df["State"].isin(state) & df["Meal_Type"].isin(meal_type)]
 
 st.subheader("Waste Volume by State")
-fig1 = px.bar(filtered_df, x="State", y="Volume", color="Waste_Type", title="Total Waste Volume by State", template="plotly_dark")
+fig1 = px.bar(filtered_df, x="State", y="Volume", color="Meal_Type", title="Total Waste Volume by State", template="plotly_dark")
 st.plotly_chart(fig1, use_container_width=True)
 
-st.subheader("Distribution of Waste Types")
-fig2 = px.pie(filtered_df, names="Waste_Type", values="Volume", hole=0.4, title="Waste Type Distribution")
+st.subheader("Distribution of Meal Types")
+fig2 = px.pie(filtered_df, names="Meal_Type", values="Volume", hole=0.4, title="Meal Type Distribution")
 fig2.update_traces(textinfo='label+percent')
 st.plotly_chart(fig2, use_container_width=True)
-
 
 cl1, cl2 = st.columns(2)
 with cl1:
@@ -51,9 +48,9 @@ with cl1:
         st.download_button("Download Waste Volume Data", data=csv1, file_name="Waste_Volume_Data.csv", mime="text/csv")
 
 with cl2:
-    with st.expander("Download Waste Type Data"):
-        csv2 = filtered_df.groupby('Waste_Type').agg({"Volume": "sum"}).reset_index().to_csv(index=False).encode('utf-8')
-        st.download_button("Download Waste Type Data", data=csv2, file_name="Waste_Type_Data.csv", mime="text/csv")
+    with st.expander("Download Meal Type Data"):
+        csv2 = filtered_df.groupby('Meal_Type').agg({"Volume": "sum"}).reset_index().to_csv(index=False).encode('utf-8')
+        st.download_button("Download Meal Type Data", data=csv2, file_name="Meal_Type_Data.csv", mime="text/csv")
 
 st.subheader("Time Series Analysis of Waste Volume")
 filtered_df["Month"] = filtered_df["Date"].dt.to_period("M").dt.to_timestamp()
@@ -66,17 +63,15 @@ with st.expander("View Time Series Data"):
     csv3 = linechart.to_csv(index=False).encode('utf-8')
     st.download_button('Download Time Series Data', data=csv3, file_name="Time_Series_Data.csv", mime="text/csv")
 
-
-st.subheader("Hierarchical View of Waste Types")
-fig4 = px.treemap(filtered_df, path=["State", "Waste_Type"], values="Volume", color="Volume", title="Waste Volume Hierarchy", template="plotly_dark")
+st.subheader("Hierarchical View of Meal Types")
+fig4 = px.treemap(filtered_df, path=["State", "Meal_Type"], values="Volume", color="Volume", title="Waste Volume Hierarchy", template="plotly_dark")
 fig4.update_layout(width=800, height=600)
 st.plotly_chart(fig4, use_container_width=True)
 
-st.subheader("Waste Volume vs. Waste Type")
-fig5 = px.scatter(filtered_df, x="Volume", y="Waste_Type", size="Volume", color="Waste_Type", hover_name="State", title="Volume vs. Waste Type", template="plotly_dark")
+st.subheader("Waste Volume vs. Meal Type")
+fig5 = px.scatter(filtered_df, x="Volume", y="Meal_Type", size="Volume", color="Meal_Type", hover_name="State", title="Volume vs. Meal Type", template="plotly_dark")
 st.plotly_chart(fig5, use_container_width=True)
 
-# New Visualizations for day_meal_type_waste.csv, day_meal_type_absent.csv, and hostel_waste.csv
 # Load new datasets
 df_waste = pd.read_csv('day_meal_type_waste.csv')
 df_absent = pd.read_csv('day_meal_type_absent.csv')
@@ -88,10 +83,6 @@ days = df_waste['day'].unique()
 day_to_date = {day: date for day, date in zip(days, date_range)}
 df_waste['Date'] = df_waste['day'].map(day_to_date)
 df_absent['Date'] = df_absent['day'].map(day_to_date)
-
-# Apply date filters
-# df_waste = df_waste[(df_waste['Date'] >= pd.to_datetime(date1)) & (df_waste['Date'] <= pd.to_datetime(date2))]
-# df_absent = df_absent[(df_absent['Date'] >= pd.to_datetime(date1)) & (df_absent['Date'] <= pd.to_datetime(date2))]
 
 # Visualization: Waste Volume by Day and Meal Type
 st.subheader("Canteen Waste by Day and Meal Type")
@@ -122,15 +113,14 @@ st.plotly_chart(fig9, use_container_width=True)
 csv_original = df.to_csv(index=False).encode('utf-8')
 st.download_button("Download Original Dataset", data=csv_original, file_name="Waste_Data.csv", mime="text/csv")
 
-
 st.subheader("Geographical Map of Waste Collection")
 fig = px.scatter_mapbox(
     df,
     lat="Latitude",
     lon="Longitude",
     hover_name="State",
-    hover_data=["Waste_Type", "Volume", "Date"],
-    color="Waste_Type",
+    hover_data=["Meal_Type", "Volume", "Date"],
+    color="Meal_Type",
     size="Volume",
     zoom=16,
     height=600,
@@ -147,11 +137,10 @@ fig.update_layout(
     hovermode='closest'
 )
 
-# Enhance hover information
 fig.update_traces(
     hovertemplate=(
         "<b>%{hovertext}</b><br>"
-        "Waste Type: %{customdata[0]}<br>"
+        "Meal Type: %{customdata[0]}<br>"
         "Volume: %{customdata[1]} kg<br>"
         "Date: %{customdata[2]}<extra></extra>"
     )

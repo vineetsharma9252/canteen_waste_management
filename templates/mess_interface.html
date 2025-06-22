@@ -12,7 +12,7 @@
         font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
         margin: 0;
         padding: 0;
-        background: #f4f6f9;
+        background: linear-gradient(135deg, #e9ecef, #ffffff);
         color: #333;
       }
 
@@ -21,14 +21,44 @@
         margin: 40px auto;
         padding: 20px;
         background: #ffffff;
-        border-radius: 10px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border-radius: 12px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+      }
+
+      .container:hover {
+        transform: translateY(-5px);
       }
 
       h2 {
         text-align: center;
         color: #2c3e50;
         margin-bottom: 30px;
+        font-size: 2rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .user-dropdown {
+        width: 100%;
+        max-width: 300px;
+        margin: 0 auto 20px;
+        padding: 10px;
+        border: 2px solid #007bff;
+        border-radius: 8px;
+        font-size: 1rem;
+        background: #f8f9fa;
+        color: #333;
+        appearance: none;
+        cursor: pointer;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .user-dropdown:focus {
+        outline: none;
+        border-color: #0056b3;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
       }
 
       table {
@@ -36,85 +66,150 @@
         border-collapse: collapse;
         overflow: hidden;
         border-radius: 10px;
+        background: #ffffff;
       }
 
       thead {
-        background-color: #007bff;
+        background: linear-gradient(90deg, #007bff, #0056b3);
       }
 
       th,
       td {
-        padding: 14px 12px;
+        padding: 15px 12px;
         text-align: center;
+        border-bottom: 1px solid #e9ecef;
       }
 
       th {
         color: white;
         font-weight: 600;
         text-transform: uppercase;
+        letter-spacing: 0.5px;
       }
 
       tr:nth-child(even) {
-        background-color: #f0f4f8;
+        background-color: #f8f9fa;
       }
 
       tr:hover {
         background-color: #e2e8f0;
+        transform: scale(1.01);
+        transition: all 0.2s ease;
       }
 
       td {
         font-size: 15px;
+        transition: color 0.2s ease;
       }
 
       .source-prebooking {
         color: #28a745;
         font-weight: 500;
+        padding: 2px 8px;
+        border-radius: 12px;
+        background: #e9fce9;
       }
 
       .source-default {
         color: #6c757d;
         font-weight: 500;
-      }
-
-      /* Button Styling */
-      .interface-button {
-        display: inline-block;
-        margin: 0 10px 20px;
-        padding: 10px 20px;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        font-size: 16px;
-        font-weight: 500;
-        cursor: pointer;
-        text-decoration: none;
-        text-align: center;
-        transition: background-color 0.3s;
-      }
-
-      .interface-button:hover {
-        background-color: #0056b3;
+        padding: 2px 8px;
+        border-radius: 12px;
+        background: #f1f3f5;
       }
 
       .button-container {
         text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .interface-button {
+        display: inline-block;
+        margin: 0 10px;
+        padding: 12px 25px;
+        background: linear-gradient(90deg, #007bff, #0056b3);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        text-align: center;
+        transition: background 0.3s ease, transform 0.2s ease;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      .interface-button:hover {
+        background: linear-gradient(90deg, #0056b3, #003d80);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
       }
 
       .schedule-button {
-        background-color: #28a745;
+        background: linear-gradient(90deg, #28a745, #218838);
       }
 
       .schedule-button:hover {
-        background-color: #218838;
+        background: linear-gradient(90deg, #218838, #1e7e34);
       }
 
       .complaint-button {
-        background-color: #dc3545;
+        background: linear-gradient(90deg, #dc3545, #c82333);
       }
 
       .complaint-button:hover {
-        background-color: #c82333;
+        background: linear-gradient(90deg, #c82333, #bd2130);
+      }
+
+      .totals {
+        margin-top: 30px;
+        text-align: center;
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #2c3e50;
+      }
+
+      .totals div {
+        margin: 10px 0;
+        padding: 10px 20px;
+        background: #e9ecef;
+        border-radius: 8px;
+        display: inline-block;
+      }
+
+      .item-quantities {
+        margin-top: 30px;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .item-quantities h3 {
+        text-align: center;
+        color: #2c3e50;
+        margin-bottom: 20px;
+        font-size: 1.5rem;
+        font-weight: 700;
+      }
+
+      .item-quantities ul {
+        list-style-type: none;
+        padding: 0;
+      }
+
+      .item-quantities li {
+        padding: 10px 15px;
+        margin-bottom: 10px;
+        background: #ffffff;
+        border-radius: 8px;
+        border-left: 4px solid #007bff;
+        transition: transform 0.2s ease;
+      }
+
+      .item-quantities li:hover {
+        transform: translateX(5px);
       }
 
       @media screen and (max-width: 768px) {
@@ -133,7 +228,7 @@
 
         tr {
           margin-bottom: 15px;
-          background: white;
+          background: #ffffff;
           box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
           padding: 10px;
           border-radius: 8px;
@@ -156,27 +251,49 @@
           color: #555;
         }
 
+        .user-dropdown {
+          width: 100%;
+        }
+
         .interface-button {
-          width: 80%;
+          width: 100%;
           padding: 12px;
-          margin: 10px auto;
+          margin: 10px 0;
           display: block;
+        }
+
+        .totals {
+          font-size: 1rem;
+        }
+
+        .item-quantities li {
+          font-size: 0.9rem;
         }
       }
     </style>
   </head>
   <body>
     <div class="container">
-      <h2>Upcoming 3-Day Mess Bookings</h2>
+      <h2>Today's Mess Bookings</h2>
       <div class="button-container">
-        <a href="mess_complaint_interface" class="interface-button complaint-button"
+        <a
+          href="mess_complaint_interface"
+          class="interface-button complaint-button"
           >Mess Complaints</a
         >
         <a href="schedule" class="interface-button schedule-button"
           >Schedule Tasks</a
         >
       </div>
-      <table>
+      <select class="user-dropdown" id="userFilter" onchange="filterTable()">
+        <option value="">Select a User</option>
+        {% load diet_filters %} {% for booking in bookings|unique:"id" %}
+        <option value="{{ booking.id }}">
+          {{ booking.name }} ({{ booking.roll_no }})
+        </option>
+        {% endfor %}
+      </select>
+      <table id="bookingTable">
         <thead>
           <tr>
             <th>Date</th>
@@ -190,7 +307,21 @@
         </thead>
         <tbody>
           {% for booking in bookings %}
-          <tr>
+          <tr
+            data-user-id="{{ booking.id }}"
+            {%
+            if
+            not
+            forloop.first
+            and
+            booking.id
+            !="bookings.0.id"
+            %}
+            style="display: none"
+            {%
+            endif
+            %}
+          >
             <td data-label="Date">{{ booking.date }}</td>
             <td data-label="User">{{ booking.name }}</td>
             <td data-label="Roll No">{{ booking.roll_no }}</td>
@@ -206,11 +337,44 @@
           </tr>
           {% empty %}
           <tr>
-            <td colspan="7">No data for upcoming 3 days.</td>
+            <td colspan="7">No data for today.</td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
+      <div class="totals">
+        <div>Total Breakfast: {{ total_breakfast }} meals</div>
+        <div>Total Lunch: {{ total_lunch }} meals</div>
+        <div>Total Dinner: {{ total_dinner }} meals</div>
+      </div>
+      <div class="item-quantities">
+        <h3>Items to Prepare</h3>
+        <ul>
+          {% for item, quantity in item_quantities.items %}
+          <li>{{ quantity }} x {{ item }}</li>
+          {% empty %}
+          <li>No items to prepare at this time.</li>
+          {% endfor %}
+        </ul>
+      </div>
     </div>
+    <script>
+      function filterTable() {
+        const userId = document.getElementById("userFilter").value;
+        const rows = document.querySelectorAll("#bookingTable tbody tr");
+
+        rows.forEach((row) => {
+          const rowUserId = row.getAttribute("data-user-id");
+          if (userId === "" || rowUserId === userId) {
+            row.style.display = "";
+          } else {
+            row.style.display = "none";
+          }
+        });
+      }
+
+      // Initial filter to show only the first user's bookings
+      window.onload = filterTable;
+    </script>
   </body>
 </html>
