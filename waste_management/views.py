@@ -71,33 +71,28 @@ def mess_login(request):
 from datetime import datetime, timedelta
 
 
-from datetime import datetime, timedelta
-import pymysql
 
 def mess_interface(request):
-    today = datetime.now().date()  # June 22, 2025
-    current_time = datetime.now()  # 08:21 AM IST on June 22, 2025
+    today = datetime.now().date()  # e.g., June 22, 2025
+    current_time = datetime.now()  # e.g., 08:21 AM IST
     date = today.strftime("%Y-%m-%d")
-    day_name = datetime.strptime(date, "%Y-%m-%d").strftime("%A")  # Sunday
+    day_name = datetime.strptime(date, "%Y-%m-%d").strftime("%A")  # e.g., Sunday
     bookings = []
-    meals_to_prepare = []  
-    item_quantities = {}  
+    meals_to_prepare = []
+    item_quantities = {}
     immediate_meal = None
-    connection = pymysql.connect(**db_config)
+    next_day = False
 
-    print("Current time is: ", current_time)  # Debug
-    print("Today's date is: ", today)  # Debug
-    print("Date is: ", date)  # Debug
+    connection = pymysql.connect(**db_config)
     try:
-        with connection.cursor() as cursor:
+        with connection.cursor(pymysql.cursors.DictCursor) as cursor:
             # Fetch mess worker's hostel
             cursor.execute("SELECT hostel FROM mess_workers WHERE mess_worker_name = %s", (request.session.get("mess_worker_name"),))
-            hostel = cursor.fetchone()["hostel"]
-            print("Hostel are: ", hostel)
-
-            # Fetch all users
-            cursor.execute("SELECT * FROM users WHERE hostel = %s", (hostel,))
-            users = cursor.fetchall()
+            hostel = cursor.fetchone()
+            if not hostel:
+                logger.error("Mess worker hostel not found")
+                return render(request, "mess_interface.html", {"error": "Hostel not found"})
+            hostel = hostel["hostel"]
 
             # Define meal times and cutoffs
             meal_times = {
@@ -105,99 +100,113 @@ def mess_interface(request):
                 "lunch": datetime.combine(today, datetime.strptime("12:00", "%H:%M").time()),
                 "dinner": datetime.combine(today, datetime.strptime("19:00", "%H:%M").time())
             }
-            cutoffs = {meal: time - timedelta(hours=2) for meal, time in meal_times.items()}
-            print(f"Meal times: {meal_times}, Cutoffs: {cutoffs}, Current time: {current_time}")  # Debug
+            cutoffs = meal_times.copy()
 
-            # Determine immediate meal based on current time
+            # Determine immediate meal and adjust date if necessary
             if current_time >= cutoffs["breakfast"] and current_time < cutoffs["lunch"]:
                 immediate_meal = "lunch"
             elif current_time >= cutoffs["lunch"] and current_time < cutoffs["dinner"]:
                 immediate_meal = "dinner"
             elif current_time >= cutoffs["dinner"]:
-                immediate_meal = None  # No immediate meal after dinner cutoff
-            print(f"Immediate meal: {immediate_meal}")  # Debug
+                immediate_meal = "breakfast"
+                next_day = True
+                date = (today + timedelta(days=1)).strftime("%Y-%m-%d")
+                day_name = (today + timedelta(days=1)).strftime("%A")
+                meal_times["breakfast"] = datetime.combine(today + timedelta(days=1), datetime.strptime("07:00", "%H:%M").time())
 
-            # Fetch bookings and apply 2-hour cutoff, aggregate item quantities for immediate meal
-            for user in users:
-                user_id = user["id"]
+            if not immediate_meal:
+                logger.info("No immediate meal determined")
+                return render(request, "mess_interface.html", {
+                    "bookings": [], "total_meals": 0, "immediate_meal": None,
+                    "cutoffs": cutoffs, "meal_times": meal_times, "meals_to_prepare": [],
+                    "item_quantities": {}
+                })
+
+            # Fetch prebookings and default meals in bulk
+            cursor.execute("""
+                SELECT u.id, u.name, u.roll_no, p.meal_type, p.meals, p.quantity, p.date
+                FROM users u
+                LEFT JOIN prebookings p ON u.id = p.id
+                WHERE u.hostel = %s AND p.date = %s AND p.hostel = %s
+                AND p.meal_type = %s AND p.on_leave = 0
+            """, (hostel, date, hostel, immediate_meal))
+            prebookings = cursor.fetchall()
+
+            # Process prebookings
+            user_ids_with_prebookings = set()
+            for pb in prebookings:
+                user_ids_with_prebookings.add(pb["id"])
+                bookings.append({
+                    "id": pb["id"],
+                    "name": pb["name"],
+                    "roll_no": pb["roll_no"],
+                    "meal_type": pb["meal_type"],
+                    "items": pb["meals"],
+                    "quantity": pb["quantity"] or 1,
+                    "date": pb["date"],
+                    "source": "Prebooking"
+                })
+                meals_to_prepare.append({
+                    "meal_type": pb["meal_type"],
+                    "items": pb["meals"],
+                    "quantity": pb["quantity"] or 1
+                })
+                for item in pb["meals"].split(","):
+                    item = item.strip()
+                    if item:  # Validate item
+                        item_quantities[item] = item_quantities.get(item, 0) + (pb["quantity"] or 1)
+
+            # Fetch users without prebookings for default meals
+            cursor.execute("""
+                SELECT u.id, u.name, u.roll_no
+                FROM users u
+                WHERE u.hostel = %s AND u.id NOT IN %s
+            """, (hostel, tuple(user_ids_with_prebookings) if user_ids_with_prebookings else (0,)))
+            users_without_prebookings = cursor.fetchall()
+
+            # Fetch default meals for users without prebookings
+            for user in users_without_prebookings:
                 cursor.execute("""
-                    SELECT * FROM prebookings
-                    WHERE id = %s AND date = %s AND hostel = %s
-                """, (user_id, date, hostel))
-                prebookings = cursor.fetchall()
-                print(f"Prebookings for user {user_id}: {prebookings}")  # Debug
-                for meal_type in ["breakfast", "lunch", "dinner"]:
-                    cutoff_time = cutoffs[meal_type]
-                    if current_time < cutoff_time:
-                        continue  # Skip if before cutoff
-                    if meal_type != immediate_meal:
-                        continue  # Only process the immediate meal
+                    SELECT meal_type, items, quantity
+                    FROM default_food
+                    WHERE id = %s AND day = %s AND hostel_id = %s AND meal_type = %s
+                    LIMIT 1
+                """, (user["id"], day_name, hostel, immediate_meal))
+                default = cursor.fetchone()
+                if default:
+                    bookings.append({
+                        "id": user["id"],
+                        "name": user["name"],
+                        "roll_no": user["roll_no"],
+                        "meal_type": default["meal_type"],
+                        "items": default["items"],
+                        "quantity": default["quantity"] or 1,
+                        "date": date,
+                        "source": "Default Diet"
+                    })
+                    meals_to_prepare.append({
+                        "meal_type": default["meal_type"],
+                        "items": default["items"],
+                        "quantity": default["quantity"] or 1
+                    })
+                    for item in default["items"].split(","):
+                        item = item.strip()
+                        if item:  # Validate item
+                            item_quantities[item] = item_quantities.get(item, 0) + (default["quantity"] or 1)
 
-                    # Check if prebooking exists for this meal type
-                    prebooking_exists = any(pb["meal_type"] == meal_type and pb["on_leave"] == 0 for pb in prebookings)
-                    if prebooking_exists:
-                        # Use prebooking data
-                        for pb in prebookings:
-                            if pb["meal_type"] == meal_type and pb["on_leave"] == 0:
-                                bookings.append({
-                                    "id": user_id,
-                                    "name": user["name"],
-                                    "roll_no": user["roll_no"],
-                                    "meal_type": pb["meal_type"],
-                                    "items": pb["meals"],
-                                    "quantity": pb["quantity"] or 1,
-                                    "date": pb["date"],
-                                    "source": "Prebooking"
-                                })
-                                meals_to_prepare.append({
-                                    "meal_type": pb["meal_type"],
-                                    "items": pb["meals"],
-                                    "quantity": pb["quantity"] or 1
-                                })
-                                for item in pb["meals"].split(","):
-                                    item = item.strip()
-                                    item_quantities[item] = item_quantities.get(item, 0) + (pb["quantity"] or 1)
-                    else:
-                        # No prebooking and not on leave, use default food
-                        cursor.execute("""
-                            SELECT * FROM default_food
-                            WHERE id = %s AND day = %s AND hostel_id = %s AND meal_type = %s
-                        """, (user_id, day_name, hostel, meal_type))
-                        defaults = cursor.fetchall()
-                        if defaults:
-                            for df in defaults:
-                                bookings.append({
-                                    "id": user_id,
-                                    "name": user["name"],
-                                    "roll_no": user["roll_no"],
-                                    "meal_type": df["meal_type"],
-                                    "items": df["items"],
-                                    "quantity": df["quantity"] or 1,
-                                    "date": date,
-                                    "source": "Default Diet"
-                                })
-                                meals_to_prepare.append({
-                                    "meal_type": df["meal_type"],
-                                    "items": df["items"],
-                                    "quantity": df["quantity"] or 1
-                                })
-                                for item in df["items"].split(","):
-                                    item = item.strip()
-                                    item_quantities[item] = item_quantities.get(item, 0) + (df["quantity"] or 1)
+            # Calculate total meals for the immediate meal
+            total_meals = sum(b["quantity"] for b in bookings if b["meal_type"] == immediate_meal)
+            logger.info(f"Total meals for {immediate_meal}: {total_meals}")
 
-            # Calculate totals only for the immediate meal
-            total_meals = 0
-            print("Immediate meal is: ", immediate_meal)  # Debug
-            if immediate_meal:
-                total_meals = sum(b["quantity"] for b in bookings if b["meal_type"] == immediate_meal)
-            print(f"Total meals for {immediate_meal}: {total_meals}")  # Debug
-
+    except pymysql.Error as e:
+        logger.error(f"Database error: {e}")
+        return render(request, "mess_interface.html", {"error": "Database error occurred"})
     finally:
         connection.close()
 
     return render(request, "mess_interface.html", {
         "bookings": bookings,
-        "total_meals": total_meals if immediate_meal else 0,
+        "total_meals": total_meals,
         "immediate_meal": immediate_meal,
         "cutoffs": cutoffs,
         "meal_times": meal_times,
