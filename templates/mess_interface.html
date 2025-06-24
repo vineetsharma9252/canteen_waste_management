@@ -61,63 +61,6 @@
         box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
       }
 
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        overflow: hidden;
-        border-radius: 10px;
-        background: #ffffff;
-      }
-
-      thead {
-        background: linear-gradient(90deg, #007bff, #0056b3);
-      }
-
-      th,
-      td {
-        padding: 15px 12px;
-        text-align: center;
-        border-bottom: 1px solid #e9ecef;
-      }
-
-      th {
-        color: white;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-      }
-
-      tr:nth-child(even) {
-        background-color: #f8f9fa;
-      }
-
-      tr:hover {
-        background-color: #e2e8f0;
-        transform: scale(1.01);
-        transition: all 0.2s ease;
-      }
-
-      td {
-        font-size: 15px;
-        transition: color 0.2s ease;
-      }
-
-      .source-prebooking {
-        color: #28a745;
-        font-weight: 500;
-        padding: 2px 8px;
-        border-radius: 12px;
-        background: #e9fce9;
-      }
-
-      .source-default {
-        color: #6c757d;
-        font-weight: 500;
-        padding: 2px 8px;
-        border-radius: 12px;
-        background: #f1f3f5;
-      }
-
       .button-container {
         text-align: center;
         margin-bottom: 20px;
@@ -212,21 +155,113 @@
         transform: translateX(5px);
       }
 
+      .accordion {
+        margin: 20px 0;
+      }
+
+      .accordion-item {
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        overflow: hidden;
+        background: #ffffff;
+        transition: all 0.3s ease;
+      }
+
+      .accordion-header {
+        background: linear-gradient(90deg, #007bff, #0056b3);
+        color: white;
+        padding: 15px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: background 0.3s ease;
+      }
+
+      .accordion-header:hover {
+        background: linear-gradient(90deg, #0056b3, #003d80);
+      }
+
+      .accordion-header::after {
+        content: '\25BC';
+        font-size: 0.9rem;
+        transition: transform 0.3s ease;
+      }
+
+      .accordion-header.active::after {
+        transform: rotate(180deg);
+      }
+
+      .accordion-content {
+        display: none;
+        padding: 15px;
+        background: #f8f9fa;
+      }
+
+      .accordion-content table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #ffffff;
+        border-radius: 8px;
+      }
+
+      .accordion-content th,
+      .accordion-content td {
+        padding: 12px;
+        text-align: center;
+        border-bottom: 1px solid #e9ecef;
+      }
+
+      .accordion-content th {
+        background: #e9ecef;
+        color: #2c3e50;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .accordion-content tr:nth-child(even) {
+        background-color: #f1f3f5;
+      }
+
+      .accordion-content tr:hover {
+        background-color: #e2e8f0;
+      }
+
+      .source-prebooking {
+        color: #28a745;
+        font-weight: 500;
+        padding: 2px 8px;
+        border-radius: 12px;
+        background: #e9fce9;
+      }
+
+      .source-default {
+        color: #6c757d;
+        font-weight: 500;
+        padding: 2px 8px;
+        border-radius: 12px;
+        background: #f1f3f5;
+      }
+
       @media screen and (max-width: 768px) {
-        table,
-        thead,
-        tbody,
-        th,
-        td,
-        tr {
+        .accordion-content table,
+        .accordion-content thead,
+        .accordion-content tbody,
+        .accordion-content th,
+        .accordion-content td,
+        .accordion-content tr {
           display: block;
         }
 
-        thead {
+        .accordion-content thead {
           display: none;
         }
 
-        tr {
+        .accordion-content tr {
           margin-bottom: 15px;
           background: #ffffff;
           box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
@@ -234,13 +269,13 @@
           border-radius: 8px;
         }
 
-        td {
+        .accordion-content td {
           text-align: right;
           padding-left: 50%;
           position: relative;
         }
 
-        td::before {
+        .accordion-content td::before {
           content: attr(data-label);
           position: absolute;
           left: 15px;
@@ -276,72 +311,55 @@
     <div class="container">
       <h2>Today's Mess Bookings</h2>
       <div class="button-container">
-        <a
-          href="mess_complaint_interface"
-          class="interface-button complaint-button"
-          >Mess Complaints</a
-        >
-        <a href="schedule" class="interface-button schedule-button"
-          >Schedule Tasks</a
-        >
+        <a href="mess_complaint_interface" class="interface-button complaint-button">Mess Complaints</a>
+        <a href="schedule" class="interface-button schedule-button">Schedule Tasks</a>
       </div>
-      <select class="user-dropdown" id="userFilter" onchange="filterTable()">
-        <option value="">Select a User</option>
-        {% load diet_filters %} {% for booking in bookings|unique:"id" %}
-        <option value="{{ booking.id }}">
-          {{ booking.name }} ({{ booking.roll_no }})
-        </option>
+      <select class="user-dropdown" id="userFilter" onchange="filterAccordions()">
+        <option value="">Select a User (Show All)</option>
+        {% load diet_filters %}
+        {% for booking in bookings|unique:"id" %}
+        <option value="{{ booking.id }}">{{ booking.name }} ({{ booking.roll_no }})</option>
         {% endfor %}
       </select>
-      <table id="bookingTable">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>User</th>
-            <th>Roll No</th>
-            <th>Meal Type</th>
-            <th>Items</th>
-            <th>Quantity</th>
-            <th>Source</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for booking in bookings %}
-          <tr
-            data-user-id="{{ booking.id }}"
-            {%
-            if
-            not
-            forloop.first
-            and
-            booking.id
-            !="bookings.0.id"
-            %}
-            style="display: none"
-            {%
-            endif
-            %}
-          >
-            <td data-label="Date">{{ booking.date }}</td>
-            <td data-label="User">{{ booking.name }}</td>
-            <td data-label="Roll No">{{ booking.roll_no }}</td>
-            <td data-label="Meal Type">{{ booking.meal_type }}</td>
-            <td data-label="Items">{{ booking.items }}</td>
-            <td data-label="Quantity">{{ booking.quantity }}</td>
-            <td
-              data-label="Source"
-              class="{% if booking.source == 'Prebooking' %}source-prebooking{% else %}source-default{% endif %}"
-            >
-              {{ booking.source }}
-            </td>
-          </tr>
-          {% empty %}
-          <tr>
-            <td colspan="7">No data for today.</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+      <div class="accordion" id="bookingAccordion">
+        {% for booking in bookings|unique:"id" %}
+        <div class="accordion-item" data-user-id="{{ booking.id }}">
+          <div class="accordion-header">
+            {{ booking.name }} ({{ booking.roll_no }})
+          </div>
+          <div class="accordion-content">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Meal Type</th>
+                  <th>Items</th>
+                  <th>Quantity</th>
+                  <th>Source</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for b in bookings %}
+                {% if b.id == booking.id %}
+                <tr>
+                  <td data-label="Date">{{ b.date }}</td>
+                  <td data-label="Meal Type">{{ b.meal_type }}</td>
+                  <td data-label="Items">{{ b.items }}</td>
+                  <td data-label="Quantity">{{ b.quantity }}</td>
+                  <td data-label="Source" class="{% if b.source == 'Prebooking' %}source-prebooking{% else %}source-default{% endif %}">
+                    {{ b.source }}
+                  </td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        {% empty %}
+        <div>No data for today.</div>
+        {% endfor %}
+      </div>
       <div class="totals">
         <div>Total Breakfast: {{ total_breakfast }} meals</div>
         <div>Total Lunch: {{ total_lunch }} meals</div>
@@ -359,22 +377,46 @@
       </div>
     </div>
     <script>
-      function filterTable() {
-        const userId = document.getElementById("userFilter").value;
-        const rows = document.querySelectorAll("#bookingTable tbody tr");
+      // Accordion toggle functionality
+      document.querySelectorAll('.accordion-header').forEach(header => {
+        header.addEventListener('click', () => {
+          const content = header.nextElementSibling;
+          const isActive = header.classList.contains('active');
+          
+          // Close all other accordions
+          document.querySelectorAll('.accordion-header').forEach(h => {
+            h.classList.remove('active');
+            h.nextElementSibling.style.display = 'none';
+          });
+          
+          // Toggle current accordion
+          if (!isActive) {
+            header.classList.add('active');
+            content.style.display = 'block';
+          }
+        });
+      });
 
-        rows.forEach((row) => {
-          const rowUserId = row.getAttribute("data-user-id");
-          if (userId === "" || rowUserId === userId) {
-            row.style.display = "";
+      // Filter accordions based on user selection
+      function filterAccordions() {
+        const userId = document.getElementById('userFilter').value;
+        const items = document.querySelectorAll('.accordion-item');
+
+        items.forEach(item => {
+          const itemUserId = item.getAttribute('data-user-id');
+          if (userId === '' || itemUserId === userId) {
+            item.style.display = 'block';
           } else {
-            row.style.display = "none";
+            item.style.display = 'none';
           }
         });
       }
 
-      // Initial filter to show only the first user's bookings
-      window.onload = filterTable;
+      // Initialize: close all accordions and apply filter
+      document.querySelectorAll('.accordion-content').forEach(content => {
+        content.style.display = 'none';
+      });
+      window.onload = filterAccordions;
     </script>
   </body>
 </html>
