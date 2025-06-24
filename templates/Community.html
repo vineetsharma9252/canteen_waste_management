@@ -5,7 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Community - Food Waste Reduction at IIT Guwahati</title>
     <style>
-      /* General Styles */
+      :root {
+        --primary: #2e7d32;
+        --primary-light: #4caf50;
+        --secondary: #ff6d00;
+        --secondary-light: #ff9e40;
+        --background: #f5f5f5;
+        --card-bg: #ffffff;
+        --text-dark: #333333;
+        --text-light: #666666; /* Light Green */
+      }
       body {
         font-family: Arial, sans-serif;
         color: #333;
@@ -23,7 +32,7 @@
       }
 
       .messages .success {
-        color: #00796b;
+        color: var(--accent-color);
         font-weight: bold;
       }
 
@@ -37,7 +46,7 @@
         display: inline-block;
         text-decoration: none;
         color: white;
-        background-color:rgb(255, 146, 5);
+        background-color: rgb(255, 146, 5);
         padding: 10px 20px;
         border-radius: 30px;
         font-size: 1.2em;
@@ -61,13 +70,13 @@
 
       /* Header Styles */
       h1 {
-        color: rgb(45, 170, 128);
+        color: var(--primary);
         margin-top: 20px;
         font-size: 2.5em;
       }
 
       h2 {
-        color: rgb(45, 170, 128);
+        color: var(--secondary-light);
         margin: 10px 0;
         font-size: 1.8em;
       }
@@ -106,7 +115,7 @@
         flex: 0 0 300px;
         scroll-snap-align: start;
         background-color: #ffffff;
-        border: 2px solid rgb(45, 170, 128);
+        border: 2px solid var(--secondary-light);
         border-radius: 10px;
         padding: 20px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -114,7 +123,7 @@
       }
 
       .story h3 {
-        color: rgb(45, 170, 128);
+        color: var(--primary);
         font-size: 1.5em;
         margin-top: 0;
       }
@@ -141,7 +150,7 @@
         margin: 30px 0;
         background-color: #ffffff;
         padding: 50px;
-        border: 2px solid rgb(45, 170, 128);
+        border: 2px solid var(--primary-light);
         border-radius: 10px;
 
         width: 90%;
@@ -157,7 +166,7 @@
         width: 100%;
         padding: 10px;
         margin: 10px 0;
-        border: 1px solid #00796b;
+        border: 1px solid var(--secondary);
         border-radius: 5px;
       }
 
@@ -174,14 +183,14 @@
       }
 
       .new-story-form button:hover {
-        background-color: rgb(45, 170, 128);
+        background-color: var(--secondary-light);
       }
 
       /* Footer Styles */
       footer {
         margin-top: 50px;
-        background-color: #004d40;
-        color: white;
+        background-color: var(--primary-light);
+        color: var(--background);
         padding: 20px;
         font-size: 0.9em;
       }
