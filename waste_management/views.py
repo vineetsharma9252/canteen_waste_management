@@ -25,6 +25,7 @@ from django.http import JsonResponse
 from datetime import date
 import hashlib
 import subprocess
+import random
 
 
 subprocess.Popen(["python","-m","streamlit", "run", os.path.join(settings.BASE_DIR,"dash.py") , "--server.headless", "true"])
@@ -47,11 +48,18 @@ db_config = {
 }
 
 
+
+def tokenGenerator(mess_id , password):
+    return hashlib.sha256((mess_id + password).encode()).hexdigest()
+
+
 def mess_login(request):
     if request.method == "POST":
         mess_id = request.POST.get("mess_id")
         password = request.POST.get("password")
         hostel = request.POST.get("hostel")
+        token = tokenGenerator(mess_id, password)
+        request.session['mess_worker_token'] = token
         print("Hostel is : ",hostel)
         connection = pymysql.connect(**db_config)
         with connection.cursor() as cursor:
@@ -81,7 +89,6 @@ def mess_interface(request):
     meals_to_prepare = []
     item_quantities = {}
     immediate_meal = None
-    next_day = False
 
     connection = pymysql.connect(**db_config)
     try:
@@ -197,13 +204,28 @@ def mess_interface(request):
             # Calculate total meals for the immediate meal
             total_meals = sum(b["quantity"] for b in bookings if b["meal_type"] == immediate_meal)
             logger.info(f"Total meals for {immediate_meal}: {total_meals}")
-
+            print("total meals are : ",total_meals)
+            print("items quantities are : ",item_quantities)
+            print("meals to prepare are : ",meals_to_prepare)
     except pymysql.Error as e:
         logger.error(f"Database error: {e}")
         return render(request, "mess_interface.html", {"error": "Database error occurred"})
     finally:
         connection.close()
-
+    total_quantity = 0 
+    total_breakfast = 0
+    total_lunch = 0
+    total_dinner = 0
+    for _ , quantity in item_quantities.items():
+        total_quantity += quantity
+    print("Total quantity is : ",total_quantity)
+    if immediate_meal == "breakfast":
+        total_breakfast = total_quantity
+    elif immediate_meal == "lunch":
+        total_lunch = total_quantity
+    elif immediate_meal == "dinner":
+        total_dinner = total_quantity
+        
     return render(request, "mess_interface.html", {
         "bookings": bookings,
         "total_meals": total_meals,
@@ -212,6 +234,7 @@ def mess_interface(request):
         "meal_times": meal_times,
         "meals_to_prepare": meals_to_prepare,
         "item_quantities": item_quantities
+        , "total_breakfast": total_breakfast, "total_lunch": total_lunch, "total_dinner": total_dinner
     })
     
 
@@ -559,7 +582,7 @@ def prebooking(request):
     menu_items = {'breakfast': [], 'lunch': [], 'dinner': []}
     prebooking_meals = None
     meal_times = {'breakfast': None, 'lunch': None, 'dinner': None}
-
+    # today = timezone.now().date()
     try:
         connection = pymysql.connect(**db_config)
         with connection.cursor() as cursor:
@@ -686,6 +709,7 @@ def prebooking(request):
             # print("meal_times:", meal_times)  # Debug
             # print("today:", today)  # Debug
             print("booking date is : ",booking_date)
+            print("today is : ",today)
             if booking_date == today:
                 current_time = timezone.now().time()
                 cutoff_time = meal_times.get(meal_type)
@@ -797,10 +821,12 @@ def prebooking(request):
             today = timezone.now().date()
             min_date = today
             import re
+            # from django.utils import timezone
+            import pytz
             print("booking date is : ",booking_date)
             print("Min date is : ",min_date)
             if booking_date == min_date:  # Booking for tomorrow
-                current_time = timezone.now().time()
+                current_time = timezone.now().astimezone(pytz.timezone('Asia/Kolkata')).time()
                 cutoff_time = meal_times.get(meal_type)
                 print("yeah it is working till now , cutoff time is ",cutoff_time , " ",type(cutoff_time))
                 if cutoff_time:

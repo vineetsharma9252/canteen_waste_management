@@ -122,7 +122,12 @@ DATABASES = {
         'NAME': BASE_DIR / "db.sqlite3",
     }
 }
-
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+    }
+}
 MODEL_DIR = os.path.join(BASE_DIR, 'waste_model_3.h5')
 
 # Password validation
@@ -149,7 +154,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
 
 USE_I18N = True
 
