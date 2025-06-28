@@ -23,7 +23,7 @@ urlpatterns = [
     path('classify/', views.waste_classification_view, name='waste_classification_view'),
     path('admin/', admin.site.urls),
     # path('',views.customer_registration,name = 'Login_page'),cls
-    path('customers', include('customers.urls')), 
+    # path('customers', include('customers.urls')), 
     # path('',views.custom_login_view , name='login_page') , 
     path('', views.signup, name='signup'),
     path('login/', views.login, name='login'),
