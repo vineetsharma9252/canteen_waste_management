@@ -47,7 +47,7 @@ STATIC_URL = '/static/'
 SECRET_KEY = 'django-insecure-xk!9j=0e!xdp&od=3vtt78dyzi1uhw4ol-hstchjh3r5#z!$b('
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 from dotenv import load_dotenv
 ALLOWED_HOSTS = ['*']
 
